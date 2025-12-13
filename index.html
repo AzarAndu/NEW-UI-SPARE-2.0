@@ -501,7 +501,12 @@ async function handleImageFile(file){
     // nothing more
   }
   // final: not found
-  throw new Error("not-found");
+  // OCR fallback (printed text like Google Lens)
+const ocrFound = await scanPrintedTextFromImage(file);
+if (ocrFound) return;
+
+// final: not found
+throw new Error("not-found");
 }
 /* free camera when page unloaded */
 window.addEventListener('pagehide', ()=>{ safeClearScanner(); });
@@ -516,6 +521,27 @@ document.getElementById('unlockSound')?.addEventListener('click', () => {
 // Auto-show hint if sound might be blocked
 if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
   document.getElementById('soundHint').style.display = 'block';
+}
+async function scanPrintedTextFromImage(file) {
+  const { data } = await Tesseract.recognize(file, "eng", {
+    tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/"
+  });
+
+  const text = data.text.toUpperCase();
+
+  // Detect part numbers (adjust pattern if needed)
+  const match = text.match(/[A-Z0-9\-\/]{4,}/);
+
+  if (match) {
+    beep.play().catch(()=>{});
+    navigator.vibrate?.(150);
+    document.getElementById("search").value = match[0];
+    currentPage = 1;
+    render();
+    alert("Detected text: " + match[0]);
+    return true;
+  }
+  return false;
 }
 </script>
 </body>
