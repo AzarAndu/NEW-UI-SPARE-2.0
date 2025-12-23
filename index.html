@@ -2,608 +2,743 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Spare Parts Data</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+<title>Spare Parts Master</title>
 <style>
-/* ===== Mixed UI: clean new look + restored features ===== */
-:root{
-  --bg:#f5f6fa; --card:#fff; --muted:#7d8794; --primary:#007bff; --text:#222;
-  --dark-bg:#2c3e50; --dark-card:#34495e; --dark-text:#ecf0f1;
+/* =========================================
+   CORE VARIABLES & RESET
+   ========================================= */
+:root {
+  /* Colors */
+  --bg-body: #f0f2f5;
+  --bg-card: #ffffff;
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --border-color: #d1d5db;
+  
+  /* Brand Colors */
+  --primary: #007bff;
+  --primary-dark: #0056b3;
+  --secondary: #e2e6ea;
+  --secondary-dark: #cbd3da;
+  --accent: #28a745;
+  --accent-dark: #1e7e34;
+  
+  /* Dimensions */
+  --btn-height: 40px;
+  --radius: 6px;
+  
+  /* Dark Mode Overrides */
+  --dm-bg-body: #121212;
+  --dm-bg-card: #1e1e1e;
+  --dm-text-main: #e0e0e0;
+  --dm-text-muted: #a0a0a0;
+  --dm-border: #333333;
 }
-body{
-  font-family: Arial, sans-serif;
-  margin:20px;
-  background:var(--bg);
-  color:var(--text);
-  transition: background .2s,color .2s;
+
+* { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  margin: 0;
+  padding: 10px;
+  line-height: 1.5;
 }
-body.dark{ background:var(--dark-bg); color:var(--dark-text); }
-h2{ margin:0 0 10px 0; font-size:32px; color:inherit; }
-#status{ color:var(--muted); margin-bottom:10px; font-style:italic; }
-/* Top bar & buttons */
-.topbar{ display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
-.btn{ padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
-.btn-primary{ background:var(--primary); color:#fff; box-shadow:0 2px 0 rgba(0,0,0,0.05); }
-.btn-secondary{ background:#eee; color:#222; border-radius:6px; }
-/* toggles */
-.toggles{ display:flex; gap:12px; align-items:center; margin-left:6px; }
-.toggle{ position:relative; width:50px; height:26px; display:inline-block; }
-.toggle input{ opacity:0; width:0; height:0; }
-.slider{ position:absolute; inset:0; background:#ccc; border-radius:26px; transition:0.2s; }
-.slider:before{ content:""; position:absolute; left:3px; bottom:3px; width:20px; height:20px; background:#fff; border-radius:50%; transition:0.2s; }
-.toggle input:checked + .slider{ background:var(--primary); }
-.toggle input:checked + .slider:before{ transform:translateX(24px); }
-/* Search box */
-#search{ padding:12px; width:420px; max-width:100%; border-radius:8px; border:1px solid #ccc; margin:10px 0; }
-/* Table */
-table{ width:100%; border-collapse:collapse; background:var(--card); border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
-th{ background:#e6e9f0; padding:10px; text-align:left; border-bottom:1px solid #dcdde1; }
-td{ padding:10px; border-bottom:1px solid #efefef; }
-.compact td,.compact th{ padding:6px; font-size:13px; }
-body.dark table{ background:var(--dark-card); }
-body.dark th{ background:var(--dark-bg); color:var(--dark-text); border-bottom-color:#555; }
-body.dark td{ border-bottom-color:#3a4a59; }
-/* Pagination */
-.pagination{ margin-top:16px; display:flex; align-items:center; gap:8px; }
-/* Scanner modal (SMALL centered modal) */
-.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; z-index:9999; }
-.modal{ width:640px; max-width:94%; background:var(--card); border-radius:10px; padding:14px; box-shadow:0 8px 30px rgba(0,0,0,0.3); max-height:86vh; overflow:hidden; display:flex; flex-direction:column; }
-.modal-header{ font-size:18px; color:#666; margin:0 0 8px; }
-#qr-reader{ width:100%; height:360px; background:#000; display:flex; align-items:center; justify-content:center; color:#999; overflow:hidden; border-radius:8px; position:relative; }
-.scan-tools{ display:flex; justify-content:space-between; gap:10px; margin-top:10px; align-items:center; }
-.scan-btn{ padding:10px 14px; border-radius:6px; border:1px solid var(--primary); background:#fff; color:var(--primary); cursor:pointer; }
-.modal-footer{ text-align:right; margin-top:10px; }
-/* ensure close always visible and modal content scrollable if needed */
-.modal-body{ overflow:auto; flex:1; }
-/* dark variant for modal */
-body.dark .modal{ background:var(--dark-card); color:var(--dark-text); }
-/* responsive */
-@media (max-width:600px){
-  .modal{ width:94%; padding:10px; }
-  #qr-reader{ height:260px; }
-  #search{ width:100%; }
+
+/* =========================================
+   LAYOUT CONTAINER
+   ========================================= */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--bg-card);
+  padding: 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  /* Static shadow, no animation */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
 }
+
+/* Header Section */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+#status { font-size: 13px; font-family: monospace; color: var(--text-muted); background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px; }
+
+/* =========================================
+   3D BUTTONS (NO ANIMATION)
+   ========================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--btn-height);
+  padding: 0 16px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.1);
+  position: relative;
+  /* The 3D Effect */
+  border-bottom-width: 4px; 
+  margin-bottom: 4px; /* Space for the 3D depth */
+  user-select: none;
+}
+
+/* Primary Button (Blue) */
+.btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+  border-color: var(--primary-dark);
+}
+.btn-primary:active {
+  border-bottom-width: 0;
+  margin-top: 4px;
+  margin-bottom: 0;
+  background-color: var(--primary-dark);
+}
+
+/* Secondary Button (Grey) */
+.btn-secondary {
+  background-color: var(--secondary);
+  color: #333;
+  border-color: var(--secondary-dark);
+}
+.btn-secondary:active {
+  border-bottom-width: 0;
+  margin-top: 4px;
+  margin-bottom: 0;
+  background-color: var(--secondary-dark);
+}
+
+/* Success Button (Green/Add) */
+.btn-success {
+  background-color: var(--accent);
+  color: white;
+  border-color: var(--accent-dark);
+}
+.btn-success:active {
+  border-bottom-width: 0;
+  margin-top: 4px;
+  margin-bottom: 0;
+  background-color: var(--accent-dark);
+}
+
+/* =========================================
+   CONTROLS GRID
+   ========================================= */
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+/* Search Bar Area */
+.search-area {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+#search {
+  flex: 1;
+  min-width: 250px;
+  height: 44px; /* Taller input */
+  padding: 0 15px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 16px;
+  background: var(--bg-body);
+  color: var(--text-main);
+}
+#search:focus { border-color: var(--primary); }
+
+/* Toggles Section */
+.toggles-container {
+  display: flex;
+  gap: 15px;
+  justify-content: flex-end;
+  padding: 10px 0;
+  border-top: 1px dashed var(--border-color);
+  margin-top: 10px;
+}
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(0,0,0,0.03);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Custom Checkbox (No Animation) */
+.chk-box {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #777;
+  border-radius: 3px;
+  display: inline-block;
+  position: relative;
+}
+.chk-box:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.chk-box:checked::after {
+  content: '✔';
+  position: absolute;
+  color: white;
+  font-size: 12px;
+  left: 2px;
+  top: -1px;
+}
+
+/* =========================================
+   TABLE STYLES
+   ========================================= */
+.table-wrapper {
+  overflow-x: auto;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius);
+  margin-bottom: 15px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: var(--bg-card);
+}
+
+th {
+  background: #f8f9fa;
+  color: #444;
+  font-weight: 700;
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #ddd;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  color: var(--text-main);
+}
+
+/* Striped Rows */
+tr:nth-child(even) { background-color: rgba(0,0,0,0.02); }
+
+/* Highlighting */
+td.cell-highlight {
+  background-color: #ffeb3b !important;
+  color: black !important;
+  font-weight: bold;
+  border: 2px solid #000;
+}
+
+/* Compact Mode */
+body.compact td, body.compact th { padding: 6px 8px; font-size: 13px; }
+
+/* =========================================
+   DARK MODE
+   ========================================= */
+body.dark {
+  background-color: var(--dm-bg-body);
+  color: var(--dm-text-main);
+}
+body.dark .app-container {
+  background-color: var(--dm-bg-card);
+  border-color: var(--dm-border);
+}
+body.dark #search {
+  background: #2b2b2b;
+  border-color: #444;
+  color: #fff;
+}
+body.dark th {
+  background: #252525;
+  color: #ccc;
+  border-bottom-color: #444;
+}
+body.dark td { border-bottom-color: #333; }
+body.dark tr:nth-child(even) { background-color: rgba(255,255,255,0.03); }
+body.dark .header-row { border-bottom-color: #333; }
+body.dark .btn-secondary {
+  background: #333;
+  color: #eee;
+  border-color: #111;
+}
+body.dark .btn-secondary:active { background: #222; }
+
+/* =========================================
+   DROPDOWN & MODAL
+   ========================================= */
+.site-dropdown-container { position: relative; display: inline-block; }
+.site-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: var(--bg-card);
+  border: 2px solid var(--text-main);
+  z-index: 1000;
+  width: 200px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+}
+.site-menu.open { display: block; }
+.site-menu div {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+.site-menu div:hover { background: var(--primary); color: white; }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 9999;
+}
+.modal {
+  background: var(--bg-card);
+  width: 600px;
+  max-width: 95%;
+  padding: 20px;
+  border-radius: var(--radius);
+  border: 2px solid #444;
+}
+#qr-reader { width: 100%; background: #000; min-height: 300px; margin: 10px 0; }
+
+/* Utility */
+.pagination { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.page-input { width: 60px; padding: 5px; margin-right: 5px; }
+
 </style>
-<script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
-<div id="status">Loading data...</div>
-<h2>Spare Parts Search</h2>
-<div id="soundHint" style="margin:8px 0; padding:10px; background:#fff3cd; border-radius:8px; font-size:14px; text-align:center; display:none;">
-  🔊 Tap below to enable scanner beep sound (required once):
-  <button id="unlockSound" class="btn btn-primary" style="margin-top:8px;">Enable Sound</button>
-</div>
-<div class="topbar">
-  <button id="btn-scan" class="btn btn-primary">📷 Scan (QR / Barcode)</button>
-    <!-- ADD THIS LINE -->
-  <button id="btn-add" class="btn btn-primary">➕ Add Spare Part</button>
-  <script>
-document.getElementById("btn-add").addEventListener("click", function () {
-  window.open(
-    "https://docs.google.com/forms/d/e/1FAIpQLSdYtCErU2QugovcnGLHkPOd_G0owZKzYadJdXXgaxwa9ZGegg/viewform",
-    "_blank"
-  );
-});
-</script>
 
-  <button id="btn-refresh" class="btn btn-secondary">↻ Refresh</button>
-  <div style="flex:1"></div>
-  <div class="toggles" title="Toggles">
-    <label style="display:flex;flex-direction:column;align-items:center;font-size:12px;">
-      <div style="margin-bottom:6px;">Dark</div>
-      <label class="toggle"><input id="darkToggle" type="checkbox"><span class="slider"></span></label>
-    </label>
-    <label style="display:flex;flex-direction:column;align-items:center;font-size:12px;">
-      <div style="margin-bottom:6px;">Compact</div>
-      <label class="toggle"><input id="compactToggle" type="checkbox"><span class="slider"></span></label>
-    </label>
+<div class="app-container">
+  
+  <div class="header-row">
+    <div>
+      <h2>Spare Parts Master</h2>
+      <div id="status">System Ready</div>
+    </div>
+    
+    <div style="display:flex; gap:15px;">
+        <label class="toggle-wrapper">
+          <input id="darkToggle" type="checkbox" class="chk-box"> Dark Mode
+        </label>
+        <label class="toggle-wrapper">
+            <input id="compactToggle" type="checkbox" class="chk-box"> Compact
+        </label>
+        <label class="toggle-wrapper">
+            <input id="readToggle" type="checkbox" class="chk-box" checked> 
+            <span id="readToggleLabel">Laptop Read ON</span>
+        </label>
+    </div>
   </div>
-</div>
-<input id="search" type="text" placeholder="Search part / description / category / qty">
-<table>
-  <thead>
-    <tr><th>S.No</th><th>Item No</th><th>Part No</th><th>Description</th><th>Category</th><th>Qty</th></tr>
-  </thead>
-  <tbody id="table-body"></tbody>
-</table>
-<div class="pagination">
-  <button id="prev-page" class="btn btn-secondary">Prev</button>
-  <span id="page-info"></span>
-  <button id="next-page" class="btn btn-secondary">Next</button>
-</div>
-<br>
-<input id="jumpPage" type="number" placeholder="Go to page"><button onclick="jumpToPage()" class="btn btn-secondary">Go</button>
-<!-- SMALL SCANNER MODAL -->
-<div id="qr-backdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Scanner modal">
-    <div class="modal-body">
-      <h3 class="modal-header">Scanner (QR + Barcode)</h3>
-      <div id="qr-reader">Camera preview will appear here</div>
-      <div class="scan-tools">
-        <div style="display:flex;gap:8px;">
-          <button id="btn-flash" class="scan-btn">🔦 Flash</button>
-          <button id="btn-photo" class="scan-btn">🖼️ Scan From Photo</button>
+
+  <div class="controls-grid">
+    <button id="btn-scan" class="btn btn-primary">📷 Scan QR</button>
+    <button id="btn-add" class="btn btn-success">➕ Add Part</button>
+    <button id="btn-refresh" class="btn btn-secondary">↻ Refresh Data</button>
+    
+    <div class="site-dropdown-container">
+        <button id="btn-sites" class="btn btn-primary" style="width:100%">🔍 Search Sites ▼</button>
+        <div id="site-menu" class="site-menu">
+            <div data-site="partsouq">🧩 Partsouq</div>
+            <div data-site="spareto">🛠 Spareto</div>
+            <div data-site="sumarauto">🚗 Sumarauto</div>
+            <div data-site="fitin-google">🔎 FitinParts (Google)</div>
         </div>
-        <div style="font-size:13px;color:#666;">Tip: center code inside the preview</div>
-      </div>
     </div>
-    <div class="modal-footer">
-      <button id="qr-close" class="btn btn-secondary">Close</button>
+  </div>
+
+  <div class="search-area">
+    <input id="search" type="text" placeholder="Search Part No, Desc, Category..." autocomplete="off">
+    <button id="btn-clear" class="btn btn-secondary" title="Clear">✖</button>
+    <button id="btn-google" class="btn btn-secondary">G</button>
+    <button id="btn-lens" class="btn btn-secondary">📷 Lens</button>
+    <button id="btn-send" class="btn btn-secondary">📤 Send to Laptop</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:50px">#</th>
+          <th>Item No</th>
+          <th>Part No</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th style="width:60px">Qty</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button id="prev-page" class="btn btn-secondary">Previous</button>
+    <span id="page-info" style="font-weight:bold; padding:0 10px;">Page 1</span>
+    <button id="next-page" class="btn btn-secondary">Next</button>
+    <div style="flex:1"></div>
+    <input id="jumpPage" type="number" class="page-input" placeholder="Pg #">
+    <button onclick="jumpToPage()" class="btn btn-secondary" style="height:32px; padding:0 10px;">Go</button>
+  </div>
+
+</div>
+
+<div id="qr-backdrop" class="modal-backdrop">
+  <div class="modal">
+    <h3 style="margin-top:0">Scanner</h3>
+    <div id="qr-reader"></div>
+    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+      <div>
+          <button id="btn-flash" class="btn btn-secondary">🔦 Flash</button>
+          <button id="btn-photo" class="btn btn-secondary">🖼️ File</button>
+      </div>
+      <button id="qr-close" class="btn btn-primary">Close</button>
     </div>
   </div>
 </div>
+
 <script>
-/* ===================== ORIGINAL APP / SHEETDB LOGIC (PRESERVED) ===================== */
-/* ===================== OPTIMIZED APP + SHEETDB (REPLACEMENT) ===================== */
-let items = [];
-let currentPage = 1;
-const perPage = 50;
-
-const statusEl = document.getElementById('status');
-const searchEl = document.getElementById('search');
-const tbody = document.getElementById('table-body');
-const pageInfo = document.getElementById('page-info');
-const prevBtn = document.getElementById('prev-page');
-const nextBtn = document.getElementById('next-page');
-const refreshBtn = document.getElementById('btn-refresh');
-
+/* =========================================
+   CONFIGURATION & STATE
+   ========================================= */
+const SYNC_URL = "https://script.google.com/macros/s/AKfycbxLxQCxMx7ZR13YieRVn8OZHyu8Mm-3uu5ydtWogmQcwhYc6I6jMP6cEGQU9GRWsUXF/exec";
 const SHEETDB_BASE = "https://sheetdb.io/api/v1/bvdsyfvkla1lv";
 const CACHE_KEY = "sheetdb_cache_v1";
 
-/* ========== THEME STATE ========== */
-let isDark = localStorage.getItem('darkMode') === 'true';
-let isCompact = localStorage.getItem('compactMode') === 'true';
+let items = [];
+let currentPage = 1;
+const perPage = 50;
+let autoReadEnabled = true;
+let lastRowId = null;
+let scanLock = false;
+let qrScanner = null;
+let torchOn = false;
+let html5QrcodeLoaded = false;
+const beep = new Audio("./ding.mp3");
+
+// DOM Elements
+const els = {
+    status: document.getElementById('status'),
+    search: document.getElementById('search'),
+    tbody: document.getElementById('table-body'),
+    pageInfo: document.getElementById('page-info'),
+    prevBtn: document.getElementById('prev-page'),
+    nextBtn: document.getElementById('next-page'),
+    siteMenu: document.getElementById('site-menu'),
+    qrReader: document.getElementById('qr-reader'),
+    qrBackdrop: document.getElementById('qr-backdrop'),
+    readLabel: document.getElementById('readToggleLabel')
+};
+
+/* =========================================
+   THEME & INITIALIZATION
+   ========================================= */
+const isDark = localStorage.getItem('darkMode') === 'true';
+const isCompact = localStorage.getItem('compactMode') === 'true';
 
 document.body.classList.toggle('dark', isDark);
 document.body.classList.toggle('compact', isCompact);
-darkToggle.checked = isDark;
-compactToggle.checked = isCompact;
+document.getElementById('darkToggle').checked = isDark;
+document.getElementById('compactToggle').checked = isCompact;
 
-darkToggle.onchange = () => {
-  isDark = !isDark;
-  document.body.classList.toggle('dark', isDark);
-  localStorage.setItem('darkMode', isDark);
+// Toggle Listeners
+document.getElementById('darkToggle').onchange = (e) => {
+    document.body.classList.toggle('dark', e.target.checked);
+    localStorage.setItem('darkMode', e.target.checked);
+};
+document.getElementById('compactToggle').onchange = (e) => {
+    document.body.classList.toggle('compact', e.target.checked);
+    localStorage.setItem('compactMode', e.target.checked);
+};
+document.getElementById('readToggle').onchange = (e) => {
+    autoReadEnabled = e.target.checked;
+    els.readLabel.textContent = autoReadEnabled ? "Laptop Read ON" : "Laptop Read OFF";
 };
 
-compactToggle.onchange = () => {
-  isCompact = !isCompact;
-  document.body.classList.toggle('compact', isCompact);
-  localStorage.setItem('compactMode', isCompact);
-};
-
-/* ========== HELPERS ========== */
+/* =========================================
+   DATA LOGIC
+   ========================================= */
 const cleanKeys = row => {
-  const fixed = {};
-  for (const k in row) fixed[k.trim()] = String(row[k]).trim();
-  return fixed;
+    const fixed = {};
+    for (const k in row) fixed[k.trim()] = String(row[k]).trim();
+    return fixed;
 };
 
-/* ========== FAST RENDER ========== */
-function display(list, startIndex) {
-  tbody.textContent = "";
-  const frag = document.createDocumentFragment();
+async function loadData(force = false) {
+    els.status.textContent = "Loading Data...";
+    if (!force) {
+        const cached = sessionStorage.getItem(CACHE_KEY);
+        if (cached) {
+            items = JSON.parse(cached);
+            els.status.textContent = `Ready: ${items.length} Records (Cached)`;
+            render();
+            return;
+        }
+    }
+    try {
+        const res = await fetch(SHEETDB_BASE, { cache: "no-store" });
+        const data = await res.json();
+        items = data.map(cleanKeys);
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(items));
+        els.status.textContent = `Ready: ${items.length} Records`;
+        render();
+    } catch {
+        els.status.textContent = "Offline Mode / Error";
+    }
+}
 
-  for (let i = 0; i < list.length; i++) {
-    const r = list[i];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${startIndex + i + 1}</td>
-      <td>${r["item no"] || ""}</td>
-      <td>${r["part no"] || ""}</td>
-      <td>${r["description"] || ""}</td>
-      <td>${r["category"] || ""}</td>
-      <td>${r["qty"] || ""}</td>
-    `;
-    frag.appendChild(tr);
-  }
-  tbody.appendChild(frag);
+/* =========================================
+   RENDERING
+   ========================================= */
+function display(list, startIndex) {
+    els.tbody.textContent = "";
+    const frag = document.createDocumentFragment();
+    list.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${startIndex + i + 1}</td>
+            <td>${r["item no"] || ""}</td>
+            <td>${r["part no"] || ""}</td>
+            <td>${r["description"] || ""}</td>
+            <td>${r["category"] || ""}</td>
+            <td>${r["qty"] || ""}</td>
+        `;
+        frag.appendChild(tr);
+    });
+    els.tbody.appendChild(frag);
 }
 
 function render() {
-  const q = searchEl.value.toLowerCase().trim();
-  const words = q ? q.split(/\s+/) : [];
-
-  const filtered = !words.length
-    ? items
-    : items.filter(r => {
-        const text = (
-          r["item no"] + " " +
-          r["part no"] + " " +
-          r["description"] + " " +
-          r["category"] + " " +
-          r["qty"]
-        ).toLowerCase();
+    const q = els.search.value.toLowerCase().trim();
+    const words = q ? q.split(/\s+/) : [];
+    
+    const filtered = !words.length ? items : items.filter(r => {
+        const text = Object.values(r).join(" ").toLowerCase();
         return words.every(w => text.includes(w));
-      });
+    });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-  currentPage = Math.min(currentPage, totalPages);
+    const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+    currentPage = Math.min(currentPage, totalPages);
+    const start = (currentPage - 1) * perPage;
 
-  const start = (currentPage - 1) * perPage;
-  display(filtered.slice(start, start + perPage), start);
-
-  pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-  prevBtn.disabled = currentPage === 1;
-  nextBtn.disabled = currentPage === totalPages;
+    display(filtered.slice(start, start + perPage), start);
+    
+    els.pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+    els.prevBtn.disabled = currentPage === 1;
+    els.nextBtn.disabled = currentPage === totalPages;
 }
-
-/* ========== EVENTS ========== */
-searchEl.oninput = () => { currentPage = 1; render(); };
-prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; render(); } };
-nextBtn.onclick = () => { currentPage++; render(); };
 
 window.jumpToPage = () => {
-  const p = +jumpPage.value;
-  if (p > 0) { currentPage = p; render(); }
+    const p = +document.getElementById('jumpPage').value;
+    if (p > 0) { currentPage = p; render(); }
 };
 
-/* ========== FAST SHEETDB LOAD ========== */
-async function loadData(force = false) {
-  statusEl.textContent = "Loading…";
+/* =========================================
+   EVENT LISTENERS
+   ========================================= */
+// Search Inputs
+els.search.oninput = () => { currentPage = 1; render(); };
+document.getElementById('btn-clear').onclick = () => { els.search.value = ""; currentPage = 1; render(); };
+els.prevBtn.onclick = () => { if(currentPage > 1) { currentPage--; render(); }};
+els.nextBtn.onclick = () => { currentPage++; render(); };
+document.getElementById('btn-refresh').onclick = () => loadData(true);
 
-  if (!force) {
-    const cached = sessionStorage.getItem(CACHE_KEY);
-    if (cached) {
-      items = JSON.parse(cached);
-      statusEl.textContent = `Loaded ${items.length} records (cached)`;
-      render();
-      return;
+// External Actions
+document.getElementById("btn-add").onclick = () => window.open("https://docs.google.com/forms/d/e/1FAIpQLSdYtCErU2QugovcnGLHkPOd_G0owZKzYadJdXXgaxwa9ZGegg/viewform", "_blank");
+
+document.getElementById("btn-google").onclick = () => {
+    if(!els.search.value) return;
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(els.search.value), "_blank");
+};
+
+document.getElementById("btn-lens").onclick = () => {
+    window.location.href = "intent://search/#Intent;scheme=googleapp;package=com.google.android.googlequicksearchbox;end";
+};
+
+document.getElementById("btn-send").onclick = () => {
+    const val = els.search.value.trim();
+    if (!val) return;
+    fetch(SYNC_URL + "?write=" + encodeURIComponent(val))
+        .then(() => alert("Sent to Laptop ✔"))
+        .catch(() => alert("Failed to send"));
+};
+
+// Site Menu
+document.getElementById('btn-sites').onclick = (e) => {
+    e.stopPropagation();
+    els.siteMenu.classList.toggle('open');
+};
+document.addEventListener('click', (e) => {
+    if(!e.target.closest('.site-dropdown-container')) els.siteMenu.classList.remove('open');
+});
+els.siteMenu.onclick = (e) => {
+    const q = els.search.value.trim();
+    if(!q || !e.target.dataset.site) return;
+    let url = "";
+    switch (e.target.dataset.site) {
+        case "partsouq": url = "https://partsouq.com/en/search/all?q=" + encodeURIComponent(q); break;
+        case "spareto": url = "https://spareto.com/products?keywords=" + encodeURIComponent(q); break;
+        case "sumarauto": url = "https://www.sumarauto.com/"; break;
+        case "fitin-google": url = "https://www.google.com/search?q=" + encodeURIComponent("site:fitinpart.sg " + q); break;
     }
-  }
+    window.open(url, "_blank");
+};
 
-  try {
-    const res = await fetch(SHEETDB_BASE, { cache: "no-store" });
-    const data = await res.json();
-    items = data.map(cleanKeys);
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify(items));
-    statusEl.textContent = `Loaded ${items.length} records`;
+// Table Click to Search
+els.tbody.onclick = (e) => {
+    const cell = e.target.closest("td");
+    if (!cell) return;
+    const text = cell.textContent.trim();
+    if (text.length < 3) return;
+    
+    els.search.value = text;
+    currentPage = 1; 
     render();
-  } catch {
-    statusEl.textContent = "Offline – no data";
-  }
+    
+    // Highlight
+    setTimeout(() => {
+        Array.from(els.tbody.querySelectorAll("td")).forEach(c => {
+            if(c.textContent === text) {
+                c.classList.add("cell-highlight");
+                setTimeout(() => c.classList.remove("cell-highlight"), 1000);
+            }
+        });
+    }, 50);
+};
+
+/* =========================================
+   SYNC LOGIC (POLLING)
+   ========================================= */
+if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    setInterval(async () => {
+        if (!autoReadEnabled) return;
+        try {
+            const res = await fetch(SYNC_URL + "?read=latest&_=" + Date.now(), { cache: "no-store" });
+            const data = await res.json();
+            if (data && data.value && data.row !== lastRowId) {
+                lastRowId = data.row;
+                els.search.value = data.value;
+                currentPage = 1;
+                render();
+                autoReadEnabled = false; // Pause after read
+                document.getElementById('readToggle').checked = false;
+                els.readLabel.textContent = "Laptop Read OFF";
+            }
+        } catch(e) { console.warn("Sync err", e); }
+    }, 3000);
 }
 
+/* =========================================
+   SCANNER LOGIC (Load on demand)
+   ========================================= */
+async function loadScannerLib() {
+    if(html5QrcodeLoaded) return;
+    return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js";
+        s.onload = () => { html5QrcodeLoaded = true; resolve(); };
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
+function stopScanner() {
+    if(qrScanner) {
+        qrScanner.stop().then(() => qrScanner.clear()).catch(()=>{});
+        qrScanner = null;
+    }
+    els.qrBackdrop.style.display = 'none';
+    torchOn = false;
+}
+
+document.getElementById('btn-scan').onclick = async () => {
+    els.qrBackdrop.style.display = 'flex';
+    scanLock = false;
+    els.qrReader.innerHTML = "";
+    
+    try {
+        await loadScannerLib();
+        qrScanner = new Html5Qrcode("qr-reader");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        
+        await qrScanner.start({ facingMode: "environment" }, config, (decodedText) => {
+            if (scanLock) return;
+            scanLock = true;
+            beep.play().catch(()=>{});
+            if(navigator.vibrate) navigator.vibrate(200);
+            
+            els.search.value = decodedText;
+            currentPage = 1;
+            render();
+            stopScanner();
+        }, () => {});
+    } catch(e) {
+        alert("Camera Error: " + e);
+        stopScanner();
+    }
+};
+
+document.getElementById('qr-close').onclick = stopScanner;
+
+document.getElementById('btn-flash').onclick = async () => {
+    if(!qrScanner) return;
+    torchOn = !torchOn;
+    try {
+        await qrScanner.applyVideoConstraints({ advanced: [{ torch: torchOn }] });
+    } catch(e) { alert("Flash not supported"); }
+};
+
+document.getElementById('btn-photo').onclick = () => {
+    stopScanner();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+        if(!e.target.files[0]) return;
+        try {
+            await loadScannerLib();
+            const instance = new Html5Qrcode("qr-reader"); // temp instance
+            const res = await instance.scanFile(e.target.files[0], true);
+            els.search.value = res;
+            render();
+        } catch { alert("No code found in image"); }
+    };
+    input.click();
+};
+
+// Initial Load
 loadData();
-refreshBtn.onclick = () => loadData(true);
-/* ===================== SCANNER ENHANCEMENTS (QR + EAN-13 photo fallback) ===================== */
-let html5QrcodeLoaded = false;
-let qrScanner = null;
-let scanLock = false;
-let torchOn = false;
-// tiny beep (short sound)
-// ────── LOUD SUCCESS BEEP (copy-paste this instead) ──────
-const beep = new Audio("https://cdn.jsdelivr.net/gh/mdbassit/beep-sound@master/success.mp3");
-function injectScriptText(code){
-  return new Promise((resolve,reject)=>{
-    try{
-      const s=document.createElement('script');
-      s.type='text/javascript';
-      s.text = code;
-      document.head.appendChild(s);
-      html5QrcodeLoaded = true;
-      resolve();
-    }catch(e){ reject(e); }
-  });
-}
-function tryLoadLocal(){
-  return new Promise((resolve,reject)=>{
-    if(html5QrcodeLoaded) return resolve();
-    const s=document.createElement('script');
-    s.src = "./html5-qrcode.min.js";
-    s.onload = ()=>{ html5QrcodeLoaded=true; resolve(); };
-    s.onerror = ()=>{ s.remove(); reject(new Error("local load failed")); };
-    document.head.appendChild(s);
-  });
-}
-function tryFetchRawGithub(){
-  return new Promise((resolve,reject)=>{
-    try{
-      const hostname = window.location.hostname;
-      const pathParts = (window.location.pathname||"/").split("/").filter(Boolean);
-      let rawUrl = "https://raw.githubusercontent.com/mebjas/html5-qrcode/master/dist/html5-qrcode.min.js";
-      if(hostname.endsWith("github.io") && pathParts.length>0){
-        const username = hostname.split(".")[0];
-        const repo = pathParts[0];
-        rawUrl = `https://raw.githubusercontent.com/${username}/${repo}/main/html5-qrcode.min.js`;
-      }
-      fetch(rawUrl).then(r=>{
-        if(!r.ok) throw new Error("raw fetch error "+r.status);
-        return r.text();
-      }).then(txt=>{
-        if(!txt || txt.length < 200) throw new Error("raw file too small");
-        return injectScriptText(txt);
-      }).then(resolve).catch(reject);
-    }catch(e){ reject(e); }
-  });
-}
-async function loadHtml5QrcodeScript(){
-  if(html5QrcodeLoaded) return;
-  try{
-    await tryLoadLocal();
-    return;
-  }catch(e){}
-  try{
-    await tryFetchRawGithub();
-    return;
-  }catch(e){}
-  // final fallback to CDN (may be blocked)
-  return new Promise((resolve,reject)=>{
-    const s=document.createElement('script');
-    s.src = "https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/minified/html5-qrcode.min.js";
-    s.onload = ()=>{ html5QrcodeLoaded=true; resolve(); };
-    s.onerror = ()=>reject(new Error("All attempts to load html5-qrcode failed."));
-    document.head.appendChild(s);
-  });
-}
-const qrBackdrop = document.getElementById('qr-backdrop');
-const qrReader = document.getElementById('qr-reader');
-const btnScan = document.getElementById('btn-scan');
-const btnClose = document.getElementById('qr-close');
-const btnFlash = document.getElementById('btn-flash');
-const btnPhoto = document.getElementById('btn-photo');
-btnScan.addEventListener('click', openQR);
-btnClose.addEventListener('click', closeQR);
-function safeClearScanner(){
-  if(qrScanner){
-    try{
-      qrScanner.stop().then(()=>{ try{ qrScanner.clear(); }catch(e){} }).catch(()=>{});
-    }catch(e){}
-    qrScanner = null;
-  }
-  torchOn = false;
-}
-function getScannerVideoElement(){
-  if(!qrReader) return null;
-  // html5-qrcode places a video element inside the container
-  return qrReader.querySelector('video') || null;
-}
-async function setTorch(on){
-  try{
-    const video = getScannerVideoElement();
-    if(!video || !video.srcObject) throw new Error("No video");
-    const track = video.srcObject.getVideoTracks()[0];
-    if(!track) throw new Error("No track");
-    const cap = track.getCapabilities ? track.getCapabilities() : {};
-    if(cap.torch){
-      await track.applyConstraints({ advanced:[{ torch: on }] });
-      torchOn = on;
-      return true;
-    }else{
-      // best-effort attempt (may fail)
-      await track.applyConstraints({ advanced:[{ torch: on }] }).catch(()=>{});
-      return false;
-    }
-  }catch(e){
-    return false;
-  }
-}
-/* OPEN scanner - small modal */
-async function openQR(){
-  qrBackdrop.style.display = 'flex';
-  qrBackdrop.setAttribute('aria-hidden','false');
-  scanLock = false;
-  safeClearScanner();
-  qrReader.innerHTML = ""; // clear
-  // ensure modal visible/rendered
-  await new Promise(r => requestAnimationFrame(()=>setTimeout(r, 200)));
-  try{
-    await loadHtml5QrcodeScript();
-  }catch(e){
-    alert("Scanner library failed to load: "+(e && e.message? e.message : e));
-    qrBackdrop.style.display = 'none';
-    return;
-  }
-  try{
-    qrScanner = new Html5Qrcode("qr-reader");
-    const config = {
-      fps: 15,
-      qrbox: null, // full width of container
-      experimentalFeatures: { useBarCodeDetectorIfSupported: true },
-      formatsToSupport: [
-        Html5QrcodeSupportedFormats.QR_CODE,
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8,
-        Html5QrcodeSupportedFormats.UPC_A,
-        Html5QrcodeSupportedFormats.CODE_128
-      ]
-    };
-    const cameraConfig = { facingMode: "environment" }; // only one key
-    await qrScanner.start(
-      cameraConfig,
-      config,
-      (decodedText, decodedResult) => {
-        if(scanLock) return;
-        scanLock = true;
-        (be => be?.play?.().catch?.(() => {}))(beep); navigator.vibrate?.(180);
-        document.getElementById('search').value = decodedText;
-        currentPage = 1; render();
-        // give a short moment then close so user sees the value
-        setTimeout(()=>{ closeQR(); }, 250);
-      },
-      (error) => {
-        // ignore frame decode errors
-      }
-    );
-    // small delay to detect video element
-    setTimeout(()=>{},500);
-  }catch(err){
-    console.error("start error", err);
-    alert("Camera failed to start: " + (err && err.message ? err.message : err));
-    qrBackdrop.style.display = 'none';
-    qrBackdrop.setAttribute('aria-hidden','true');
-    safeClearScanner();
-  }
-}
-/* CLOSE scanner */
-function closeQR(){
-  qrBackdrop.style.display = 'none';
-  qrBackdrop.setAttribute('aria-hidden','true');
-  safeClearScanner();
-}
-/* Flashlight toggle */
-btnFlash.addEventListener('click', async ()=>{
-  if(!qrScanner){
-    alert("Open scanner first");
-    return;
-  }
-  const ok = await setTorch(!torchOn);
-  if(!ok) alert("Flash/torch not supported on this device/browser.");
-});
-/* ============ Scan From Photo (Option B) =============
-   Strategy:
-   1) try qrScanner.scanFile(file, tryFlip=true) => good for QR
-   2) fallback: use BarcodeDetector (EAN-13) if available
-   3) final fallback: draw to canvas + try html5-qrcode scan attempts
-*/
-btnPhoto.addEventListener('click', ()=> {
-  // create hidden file input and read file via FileReader to prevent native preview
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.style.display = 'none';
-  input.onchange = async (e)=>{
-    const file = e.target.files && e.target.files[0];
-    if(!file) return;
-    // Read the file into memory first - prevents some browsers' default preview behaviour
-    const reader = new FileReader();
-    reader.onload = async () => {
-      // create blob from result
-      try{
-        await handleImageFile(file);
-      }catch(err){
-        alert("No QR or supported barcode found in image.");
-      }
-    };
-    reader.onerror = ()=>{ alert("Failed to read file."); };
-    reader.readAsArrayBuffer(file);
-  };
-  document.body.appendChild(input);
-  input.click();
-  // cleanup input after selection
-  input.addEventListener('blur', ()=>input.remove());
-});
-async function handleImageFile(file){
-  // ensure library loaded (for scanFile)
-  try{ await loadHtml5QrcodeScript(); }catch(e){ throw new Error("library"); }
-  // 1) try built-in scanFile (good for QR)
-  try{
-    // prefer instance method if available
-    if(qrScanner && typeof qrScanner.scanFile === 'function'){
-      const qrResult = await qrScanner.scanFile(file, true);
-      if(qrResult){
-        (be => be?.play?.().catch?.(() => {}))(beep); navigator.vibrate?.(180);
-        document.getElementById('search').value = qrResult;
-        currentPage = 1; render();
-        return;
-      }
-    } else if(typeof Html5Qrcode === 'function'){
-      // create temp instance
-      const tmp = new Html5Qrcode(); // no container - used only for scanFile
-      if(typeof tmp.scanFile === 'function'){
-        const res = await tmp.scanFile(file, true);
-        if(res){
-          (be => be?.play?.().catch?.(() => {}))(beep); navigator.vibrate?.(180);
-          document.getElementById('search').value = res;
-          currentPage = 1; render();
-          try{ tmp.clear(); }catch(e){};
-          return;
-        }
-        try{ tmp.clear(); }catch(e){};
-      }
-    }
-  }catch(e){
-    // continue to fallback
-  }
-  // 2) Try BarcodeDetector (EAN-13) on ImageBitmap (fast when supported)
-  try{
-    if('BarcodeDetector' in window){
-      const formats = ['ean_13','ean_8','upc_a']; // option B
-      let detector;
-      try{ detector = new BarcodeDetector({formats}); }catch(e){ detector = new BarcodeDetector(); }
-      const imgBitmap = await createImageBitmap(file);
-      const results = await detector.detect(imgBitmap);
-      if(results && results.length>0){
-        const val = results[0].rawValue || results[0].rawData || results[0].displayValue || results[0].rawText;
-        if(val){
-          (be => be?.play?.().catch?.(() => {}))(beep); navigator.vibrate?.(180);
-          document.getElementById('search').value = val;
-          currentPage = 1; render();
-          return;
-        }
-      }
-    }
-  }catch(e){
-    // ignore and continue
-  }
-  // 3) Last attempt: draw to canvas & use Html5Qrcode's decodeFromImage or scanFile again
-  try{
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    await new Promise((res,rej)=>{ img.onload = res; img.onerror = rej; });
-    // attempt decode using tmp instance
-    if(typeof Html5Qrcode === 'function'){
-      const tmp = new Html5Qrcode();
-      try{
-        const res = await tmp.scanFile(file, true); // attempt again
-        if(res){
-          (be => be?.play?.().catch?.(() => {}))(beep); navigator.vibrate?.(180);
-          document.getElementById('search').value = res;
-          currentPage = 1; render();
-          try{ tmp.clear(); }catch(e){}
-          img.remove();
-          return;
-        }
-      }catch(e){}
-      try{ tmp.clear(); }catch(e){};
-    }
-    img.remove();
-  }catch(e){
-    // nothing more
-  }
-  // final: not found
-  // OCR fallback (printed text like Google Lens)
-const ocrFound = await scanPrintedTextFromImage(file);
-if (ocrFound) return;
 
-// final: not found
-throw new Error("not-found");
-}
-/* free camera when page unloaded */
-window.addEventListener('pagehide', ()=>{ safeClearScanner(); });
-window.addEventListener('beforeunload', ()=>{ safeClearScanner(); });
-// ────── SOUND UNLOCKER (add this) ──────
-const beepTest = new Audio(beep.src); // clone of your beep
-document.getElementById('unlockSound')?.addEventListener('click', () => {
-  beepTest.play().catch(() => {});
-  document.getElementById('soundHint').style.display = 'none';
-});
-
-// Auto-show hint if sound might be blocked
-if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-  document.getElementById('soundHint').style.display = 'block';
-}
-async function scanPrintedTextFromImage(file) {
-  const { data } = await Tesseract.recognize(file, "eng", {
-    tessedit_char_whitelist: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-/"
-  });
-
-  const text = data.text.toUpperCase();
-
-  // Detect part numbers (adjust pattern if needed)
-  const match = text.match(/[A-Z0-9\-\/]{4,}/);
-
-  if (match) {
-    beep.play().catch(()=>{});
-    navigator.vibrate?.(150);
-    document.getElementById("search").value = match[0];
-    currentPage = 1;
-    render();
-    alert("Detected text: " + match[0]);
-    return true;
-  }
-  return false;
-}
 </script>
 </body>
 </html>
-
