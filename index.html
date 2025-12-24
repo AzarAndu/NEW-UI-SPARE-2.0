@@ -57,8 +57,7 @@ body {
   padding: 20px;
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
-  /* Static shadow, no animation */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+  box-shadow: 0 4px 0 rgba(0,0,0,0.05); /* Solid shadow */
 }
 
 /* Header Section */
@@ -69,6 +68,8 @@ body {
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 2px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
@@ -92,7 +93,7 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
   position: relative;
   /* The 3D Effect */
   border-bottom-width: 4px; 
-  margin-bottom: 4px; /* Space for the 3D depth */
+  margin-bottom: 4px; 
   user-select: none;
 }
 
@@ -136,6 +137,79 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
 }
 
 /* =========================================
+   3D TOGGLE SWITCHES
+   ========================================= */
+.toggles-group {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.toggle-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.toggle-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* The Switch Container */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+/* The Slider (Track) */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  /* 3D Depth for Track */
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); 
+}
+
+/* The Knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  /* Hard shadow for 3D feel */
+  box-shadow: 0 2px 0 rgba(0,0,0,0.2); 
+  transition: transform 0.1s; /* Very fast snap */
+}
+
+/* Checked State */
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* Dark Mode Specific for Toggles */
+body.dark .slider { background-color: #444; }
+body.dark input:checked + .slider { background-color: var(--primary); }
+
+/* =========================================
    CONTROLS GRID
    ========================================= */
 .controls-grid {
@@ -163,53 +237,9 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
   font-size: 16px;
   background: var(--bg-body);
   color: var(--text-main);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 #search:focus { border-color: var(--primary); }
-
-/* Toggles Section */
-.toggles-container {
-  display: flex;
-  gap: 15px;
-  justify-content: flex-end;
-  padding: 10px 0;
-  border-top: 1px dashed var(--border-color);
-  margin-top: 10px;
-}
-
-.toggle-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  background: rgba(0,0,0,0.03);
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-/* Custom Checkbox (No Animation) */
-.chk-box {
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border: 2px solid #777;
-  border-radius: 3px;
-  display: inline-block;
-  position: relative;
-}
-.chk-box:checked {
-  background: var(--primary);
-  border-color: var(--primary);
-}
-.chk-box:checked::after {
-  content: '✔';
-  position: absolute;
-  color: white;
-  font-size: 12px;
-  left: 2px;
-  top: -1px;
-}
 
 /* =========================================
    TABLE STYLES
@@ -219,13 +249,13 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
   border: 2px solid var(--border-color);
   border-radius: var(--radius);
   margin-bottom: 15px;
+  background: var(--bg-card);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  background: var(--bg-card);
 }
 
 th {
@@ -275,12 +305,22 @@ body.dark #search {
   border-color: #444;
   color: #fff;
 }
+
+/* Fixed Table Dark Mode */
+body.dark table {
+  background-color: var(--dm-bg-card);
+  color: var(--dm-text-main);
+}
 body.dark th {
   background: #252525;
   color: #ccc;
   border-bottom-color: #444;
 }
-body.dark td { border-bottom-color: #333; }
+body.dark td { 
+  color: var(--dm-text-main);
+  border-bottom-color: #333; 
+}
+
 body.dark tr:nth-child(even) { background-color: rgba(255,255,255,0.03); }
 body.dark .header-row { border-bottom-color: #333; }
 body.dark .btn-secondary {
@@ -333,7 +373,7 @@ body.dark .btn-secondary:active { background: #222; }
 
 /* Utility */
 .pagination { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.page-input { width: 60px; padding: 5px; margin-right: 5px; }
+.page-input { width: 60px; padding: 5px; margin-right: 5px; height: 32px; border:1px solid #ccc; border-radius:4px;}
 
 </style>
 </head>
@@ -341,26 +381,47 @@ body.dark .btn-secondary:active { background: #222; }
 
 <div class="app-container">
   
+  <!-- HEADER -->
   <div class="header-row">
     <div>
       <h2>Spare Parts Master</h2>
       <div id="status">System Ready</div>
     </div>
     
-    <div style="display:flex; gap:15px;">
-        <label class="toggle-wrapper">
-          <input id="darkToggle" type="checkbox" class="chk-box"> Dark Mode
-        </label>
-        <label class="toggle-wrapper">
-            <input id="compactToggle" type="checkbox" class="chk-box"> Compact
-        </label>
-        <label class="toggle-wrapper">
-            <input id="readToggle" type="checkbox" class="chk-box" checked> 
-            <span id="readToggleLabel">Laptop Read ON</span>
-        </label>
+    <!-- 3D TOGGLES -->
+    <div class="toggles-group">
+        
+        <!-- Dark Mode Toggle -->
+        <div class="toggle-wrapper">
+            <span class="toggle-label">Dark</span>
+            <label class="switch">
+                <input type="checkbox" id="darkToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- Compact Toggle -->
+        <div class="toggle-wrapper">
+            <span class="toggle-label">Compact</span>
+            <label class="switch">
+                <input type="checkbox" id="compactToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- Laptop Read Toggle -->
+        <div class="toggle-wrapper">
+            <span id="readToggleLabel" class="toggle-label" style="color:var(--primary)">Read ON</span>
+            <label class="switch">
+                <input type="checkbox" id="readToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+
     </div>
   </div>
 
+  <!-- MAIN ACTIONS (GRID) -->
   <div class="controls-grid">
     <button id="btn-scan" class="btn btn-primary">📷 Scan QR</button>
     <button id="btn-add" class="btn btn-success">➕ Add Part</button>
@@ -377,6 +438,7 @@ body.dark .btn-secondary:active { background: #222; }
     </div>
   </div>
 
+  <!-- SEARCH AREA -->
   <div class="search-area">
     <input id="search" type="text" placeholder="Search Part No, Desc, Category..." autocomplete="off">
     <button id="btn-clear" class="btn btn-secondary" title="Clear">✖</button>
@@ -385,6 +447,7 @@ body.dark .btn-secondary:active { background: #222; }
     <button id="btn-send" class="btn btn-secondary">📤 Send to Laptop</button>
   </div>
 
+  <!-- TABLE -->
   <div class="table-wrapper">
     <table>
       <thead>
@@ -398,10 +461,12 @@ body.dark .btn-secondary:active { background: #222; }
         </tr>
       </thead>
       <tbody id="table-body">
-        </tbody>
+        <!-- Rows injected here -->
+      </tbody>
     </table>
   </div>
 
+  <!-- FOOTER / PAGINATION -->
   <div class="pagination">
     <button id="prev-page" class="btn btn-secondary">Previous</button>
     <span id="page-info" style="font-weight:bold; padding:0 10px;">Page 1</span>
@@ -413,6 +478,7 @@ body.dark .btn-secondary:active { background: #222; }
 
 </div>
 
+<!-- MODAL FOR SCANNER -->
 <div id="qr-backdrop" class="modal-backdrop">
   <div class="modal">
     <h3 style="margin-top:0">Scanner</h3>
@@ -482,7 +548,8 @@ document.getElementById('compactToggle').onchange = (e) => {
 };
 document.getElementById('readToggle').onchange = (e) => {
     autoReadEnabled = e.target.checked;
-    els.readLabel.textContent = autoReadEnabled ? "Laptop Read ON" : "Laptop Read OFF";
+    els.readLabel.textContent = autoReadEnabled ? "Read ON" : "Read OFF";
+    els.readLabel.style.color = autoReadEnabled ? "var(--primary)" : "var(--text-muted)";
 };
 
 /* =========================================
@@ -652,7 +719,8 @@ if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 render();
                 autoReadEnabled = false; // Pause after read
                 document.getElementById('readToggle').checked = false;
-                els.readLabel.textContent = "Laptop Read OFF";
+                els.readLabel.textContent = "Read OFF";
+                els.readLabel.style.color = "var(--text-muted)";
             }
         } catch(e) { console.warn("Sync err", e); }
     }, 3000);
@@ -742,3 +810,6 @@ loadData();
 </script>
 </body>
 </html>
+
+
+
