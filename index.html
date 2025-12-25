@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,6 +24,8 @@
   --secondary-dark: #cbd3da;
   --accent: #28a745;
   --accent-dark: #1e7e34;
+  --ocr-color: #6f42c1; /* Purple for OCR */
+  --ocr-dark: #5a32a3;
   
   /* Dimensions */
   --btn-height: 40px;
@@ -134,6 +137,19 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
   margin-top: 4px;
   margin-bottom: 0;
   background-color: var(--accent-dark);
+}
+
+/* OCR Button (Purple) */
+.btn-ocr {
+  background-color: var(--ocr-color);
+  color: white;
+  border-color: var(--ocr-dark);
+}
+.btn-ocr:active {
+  border-bottom-width: 0;
+  margin-top: 4px;
+  margin-bottom: 0;
+  background-color: var(--ocr-dark);
 }
 
 /* =========================================
@@ -330,8 +346,23 @@ body.dark .btn-secondary {
 }
 body.dark .btn-secondary:active { background: #222; }
 
+/* Dark Mode Dropdown Fix */
+body.dark .site-menu {
+  background: var(--dm-bg-card);
+  border-color: #444;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+}
+body.dark .site-menu div {
+  border-bottom-color: #333;
+  color: var(--dm-text-main);
+}
+body.dark .site-menu div:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
 /* =========================================
-   DROPDOWN & MODAL
+   DROPDOWN & MODAL & OCR
    ========================================= */
 .site-dropdown-container { position: relative; display: inline-block; }
 .site-menu {
@@ -368,8 +399,61 @@ body.dark .btn-secondary:active { background: #222; }
   padding: 20px;
   border-radius: var(--radius);
   border: 2px solid #444;
+  display: flex;
+  flex-direction: column;
 }
-#qr-reader { width: 100%; background: #000; min-height: 300px; margin: 10px 0; }
+
+/* QR & OCR Video Container */
+#qr-reader, #ocr-reader { 
+    width: 100%; 
+    background: #000; 
+    min-height: 300px; 
+    margin: 10px 0; 
+    position: relative; 
+    overflow: hidden;
+    border-radius: 4px;
+}
+#ocr-reader video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* OCR Overlay Styles */
+.ocr-guide-box {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 70px;
+    border: 3px solid #00ff00;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.6); /* Dim surrounding */
+    pointer-events: none;
+    border-radius: 6px;
+}
+.ocr-guide-text {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 3px #000;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 0;
+    border-radius: 4px;
+}
+.ocr-processing {
+    position: absolute; inset:0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center; justify-content: center;
+    color: white;
+    flex-direction: column;
+    z-index: 20;
+}
 
 /* Utility */
 .pagination { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -390,8 +474,6 @@ body.dark .btn-secondary:active { background: #222; }
     
     <!-- 3D TOGGLES -->
     <div class="toggles-group">
-        
-        <!-- Dark Mode Toggle -->
         <div class="toggle-wrapper">
             <span class="toggle-label">Dark</span>
             <label class="switch">
@@ -399,8 +481,6 @@ body.dark .btn-secondary:active { background: #222; }
                 <span class="slider"></span>
             </label>
         </div>
-
-        <!-- Compact Toggle -->
         <div class="toggle-wrapper">
             <span class="toggle-label">Compact</span>
             <label class="switch">
@@ -408,8 +488,6 @@ body.dark .btn-secondary:active { background: #222; }
                 <span class="slider"></span>
             </label>
         </div>
-
-        <!-- Laptop Read Toggle -->
         <div class="toggle-wrapper">
             <span id="readToggleLabel" class="toggle-label" style="color:var(--primary)">Read ON</span>
             <label class="switch">
@@ -417,13 +495,13 @@ body.dark .btn-secondary:active { background: #222; }
                 <span class="slider"></span>
             </label>
         </div>
-
     </div>
   </div>
 
   <!-- MAIN ACTIONS (GRID) -->
   <div class="controls-grid">
     <button id="btn-scan" class="btn btn-primary">📷 Scan QR</button>
+    <button id="btn-ocr" class="btn btn-ocr">📝 OCR Scan</button>
     <button id="btn-add" class="btn btn-success">➕ Add Part</button>
     <button id="btn-refresh" class="btn btn-secondary">↻ Refresh Data</button>
     
@@ -478,17 +556,35 @@ body.dark .btn-secondary:active { background: #222; }
 
 </div>
 
-<!-- MODAL FOR SCANNER -->
+<!-- QR MODAL -->
 <div id="qr-backdrop" class="modal-backdrop">
   <div class="modal">
-    <h3 style="margin-top:0">Scanner</h3>
+    <h3 id="modal-title" style="margin-top:0">Scanner</h3>
+    
+    <!-- QR View -->
     <div id="qr-reader"></div>
-    <div style="display:flex; justify-content:space-between; margin-top:10px;">
-      <div>
+    
+    <!-- OCR View (Hidden by default) -->
+    <div id="ocr-reader" style="display:none;">
+        <video id="ocr-video" playsinline autoplay muted></video>
+        <div class="ocr-guide-box">
+            <div class="ocr-guide-text">PLACE PART NUMBER IN BOX</div>
+        </div>
+        <div id="ocr-loading" class="ocr-processing">
+             <div style="font-size:24px; margin-bottom:10px;">⚙️ Reading...</div>
+             <div style="font-size:14px; color:#aaa;">Please hold steady</div>
+        </div>
+    </div>
+
+    <div id="modal-controls" style="display:flex; justify-content:space-between; margin-top:10px;">
+      <div id="qr-btns">
           <button id="btn-flash" class="btn btn-secondary">🔦 Flash</button>
           <button id="btn-photo" class="btn btn-secondary">🖼️ File</button>
       </div>
-      <button id="qr-close" class="btn btn-primary">Close</button>
+      <div id="ocr-btns" style="display:none; width:100%;">
+          <button id="btn-snap-ocr" class="btn btn-ocr" style="width:100%; font-weight:bold;">📸 SNAP TEXT</button>
+      </div>
+      <button id="qr-close" class="btn btn-primary" style="margin-left:10px;">Close</button>
     </div>
   </div>
 </div>
@@ -510,6 +606,9 @@ let scanLock = false;
 let qrScanner = null;
 let torchOn = false;
 let html5QrcodeLoaded = false;
+// OCR state
+let ocrWorker = null;
+let ocrStream = null;
 const beep = new Audio("./ding.mp3");
 
 // DOM Elements
@@ -522,8 +621,14 @@ const els = {
     nextBtn: document.getElementById('next-page'),
     siteMenu: document.getElementById('site-menu'),
     qrReader: document.getElementById('qr-reader'),
+    ocrReader: document.getElementById('ocr-reader'),
     qrBackdrop: document.getElementById('qr-backdrop'),
-    readLabel: document.getElementById('readToggleLabel')
+    readLabel: document.getElementById('readToggleLabel'),
+    modalTitle: document.getElementById('modal-title'),
+    qrBtns: document.getElementById('qr-btns'),
+    ocrBtns: document.getElementById('ocr-btns'),
+    ocrVideo: document.getElementById('ocr-video'),
+    ocrLoading: document.getElementById('ocr-loading')
 };
 
 /* =========================================
@@ -537,7 +642,6 @@ document.body.classList.toggle('compact', isCompact);
 document.getElementById('darkToggle').checked = isDark;
 document.getElementById('compactToggle').checked = isCompact;
 
-// Toggle Listeners
 document.getElementById('darkToggle').onchange = (e) => {
     document.body.classList.toggle('dark', e.target.checked);
     localStorage.setItem('darkMode', e.target.checked);
@@ -633,14 +737,12 @@ window.jumpToPage = () => {
 /* =========================================
    EVENT LISTENERS
    ========================================= */
-// Search Inputs
 els.search.oninput = () => { currentPage = 1; render(); };
 document.getElementById('btn-clear').onclick = () => { els.search.value = ""; currentPage = 1; render(); };
 els.prevBtn.onclick = () => { if(currentPage > 1) { currentPage--; render(); }};
 els.nextBtn.onclick = () => { currentPage++; render(); };
 document.getElementById('btn-refresh').onclick = () => loadData(true);
 
-// External Actions
 document.getElementById("btn-add").onclick = () => window.open("https://docs.google.com/forms/d/e/1FAIpQLSdYtCErU2QugovcnGLHkPOd_G0owZKzYadJdXXgaxwa9ZGegg/viewform", "_blank");
 
 document.getElementById("btn-google").onclick = () => {
@@ -660,7 +762,6 @@ document.getElementById("btn-send").onclick = () => {
         .catch(() => alert("Failed to send"));
 };
 
-// Site Menu
 document.getElementById('btn-sites').onclick = (e) => {
     e.stopPropagation();
     els.siteMenu.classList.toggle('open');
@@ -681,18 +782,14 @@ els.siteMenu.onclick = (e) => {
     window.open(url, "_blank");
 };
 
-// Table Click to Search
 els.tbody.onclick = (e) => {
     const cell = e.target.closest("td");
     if (!cell) return;
     const text = cell.textContent.trim();
     if (text.length < 3) return;
-    
     els.search.value = text;
     currentPage = 1; 
     render();
-    
-    // Highlight
     setTimeout(() => {
         Array.from(els.tbody.querySelectorAll("td")).forEach(c => {
             if(c.textContent === text) {
@@ -703,9 +800,6 @@ els.tbody.onclick = (e) => {
     }, 50);
 };
 
-/* =========================================
-   SYNC LOGIC (POLLING)
-   ========================================= */
 if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
     setInterval(async () => {
         if (!autoReadEnabled) return;
@@ -717,7 +811,7 @@ if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
                 els.search.value = data.value;
                 currentPage = 1;
                 render();
-                autoReadEnabled = false; // Pause after read
+                autoReadEnabled = false; 
                 document.getElementById('readToggle').checked = false;
                 els.readLabel.textContent = "Read OFF";
                 els.readLabel.style.color = "var(--text-muted)";
@@ -727,9 +821,37 @@ if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 }
 
 /* =========================================
-   SCANNER LOGIC (Load on demand)
+   COMMON SCANNER FUNCTIONS
    ========================================= */
-async function loadScannerLib() {
+async function closeAllScanners() {
+    // Stop QR Scanner cleanly
+    if(qrScanner) {
+        try {
+            if(qrScanner.isScanning) {
+                await qrScanner.stop();
+            }
+            qrScanner.clear();
+        } catch(e) { }
+        qrScanner = null;
+    }
+    
+    // Stop OCR Stream
+    if(ocrStream) {
+        try { ocrStream.getTracks().forEach(t => t.stop()); } catch(e){}
+        ocrStream = null;
+    }
+    
+    // Reset UI
+    els.qrBackdrop.style.display = 'none';
+    torchOn = false;
+    els.ocrLoading.style.display = 'none';
+}
+document.getElementById('qr-close').onclick = closeAllScanners;
+
+/* =========================================
+   LIBRARY LOADER
+   ========================================= */
+async function loadQRLib() {
     if(html5QrcodeLoaded) return;
     return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -740,68 +862,210 @@ async function loadScannerLib() {
     });
 }
 
-function stopScanner() {
-    if(qrScanner) {
-        qrScanner.stop().then(() => qrScanner.clear()).catch(()=>{});
-        qrScanner = null;
-    }
-    els.qrBackdrop.style.display = 'none';
-    torchOn = false;
-}
-
+/* =========================================
+   QR SCANNER LOGIC
+   ========================================= */
 document.getElementById('btn-scan').onclick = async () => {
+    await closeAllScanners(); 
+    
     els.qrBackdrop.style.display = 'flex';
+    els.modalTitle.textContent = "QR / Barcode Scanner";
+    els.qrReader.style.display = 'block';
+    els.ocrReader.style.display = 'none';
+    els.qrBtns.style.display = 'block';
+    els.ocrBtns.style.display = 'none';
     scanLock = false;
-    els.qrReader.innerHTML = "";
     
     try {
-        await loadScannerLib();
+        await loadQRLib();
         qrScanner = new Html5Qrcode("qr-reader");
         const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-        
         await qrScanner.start({ facingMode: "environment" }, config, (decodedText) => {
             if (scanLock) return;
             scanLock = true;
             beep.play().catch(()=>{});
             if(navigator.vibrate) navigator.vibrate(200);
-            
             els.search.value = decodedText;
             currentPage = 1;
             render();
-            stopScanner();
+            closeAllScanners();
         }, () => {});
-    } catch(e) {
-        alert("Camera Error: " + e);
-        stopScanner();
-    }
+    } catch(e) { alert("Camera Error (QR): " + e); closeAllScanners(); }
 };
-
-document.getElementById('qr-close').onclick = stopScanner;
 
 document.getElementById('btn-flash').onclick = async () => {
     if(!qrScanner) return;
     torchOn = !torchOn;
-    try {
-        await qrScanner.applyVideoConstraints({ advanced: [{ torch: torchOn }] });
-    } catch(e) { alert("Flash not supported"); }
+    try { await qrScanner.applyVideoConstraints({ advanced: [{ torch: torchOn }] }); } catch(e) { alert("Flash not supported"); }
 };
 
 document.getElementById('btn-photo').onclick = () => {
-    stopScanner();
+    closeAllScanners();
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
     input.onchange = async (e) => {
         if(!e.target.files[0]) return;
         try {
-            await loadScannerLib();
-            const instance = new Html5Qrcode("qr-reader"); // temp instance
+            await loadQRLib();
+            const instance = new Html5Qrcode("qr-reader"); 
             const res = await instance.scanFile(e.target.files[0], true);
             els.search.value = res;
             render();
-        } catch { alert("No code found in image"); }
+        } catch { alert("No code found"); }
     };
     input.click();
+};
+
+/* =========================================
+   OCR (TEXT SCANNER) LOGIC - IMPROVED
+   ========================================= */
+
+// Lazy load the dedicated OCR worker with specific config
+async function initTesseractWorker() {
+    if(ocrWorker) return ocrWorker;
+    
+    // Load script
+    if(!window.Tesseract) {
+         await new Promise((resolve) => {
+            const s = document.createElement('script');
+            s.src = "https://unpkg.com/tesseract.js@2.1.0/dist/tesseract.min.js";
+            s.onload = resolve;
+            document.head.appendChild(s);
+        });
+    }
+
+    const worker = Tesseract.createWorker({
+        logger: m => console.log(m)
+    });
+    
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+    
+    // STRICT CONFIG FOR PART NUMBERS
+    await worker.setParameters({
+        // Only allow these chars
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-',
+        // Treat as a single block of uniform text
+        tessedit_pageseg_mode: '6' 
+    });
+    
+    ocrWorker = worker;
+    return ocrWorker;
+}
+
+document.getElementById('btn-ocr').onclick = async () => {
+    await closeAllScanners(); 
+    
+    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+        alert("OCR CAMERA ERROR:\nPlease use HTTPS.");
+        return;
+    }
+
+    els.qrBackdrop.style.display = 'flex';
+    els.modalTitle.textContent = "Text Scanner (Part Numbers)";
+    els.qrReader.style.display = 'none';
+    els.ocrReader.style.display = 'block';
+    els.qrBtns.style.display = 'none';
+    els.ocrBtns.style.display = 'flex';
+
+    try {
+        ocrStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" }
+        });
+        els.ocrVideo.srcObject = ocrStream;
+    } catch (e) {
+        console.warn("Back camera failed, trying fallback...", e);
+        try {
+             ocrStream = await navigator.mediaDevices.getUserMedia({ video: true });
+             els.ocrVideo.srcObject = ocrStream;
+        } catch(err) {
+            alert("Camera Access Denied.");
+            closeAllScanners();
+        }
+    }
+    
+    // Start initializing worker in background immediately
+    initTesseractWorker();
+};
+
+// Advanced Binarization (Dynamic Threshold)
+function preprocessImage(canvas) {
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    let imgData = ctx.getImageData(0,0,w,h);
+    let d = imgData.data;
+    
+    // 1. Calculate Average Brightness
+    let totalBrightness = 0;
+    for (let i=0; i<d.length; i+=4) {
+        totalBrightness += (0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2]);
+    }
+    const avgBrightness = totalBrightness / (d.length / 4);
+    
+    // 2. Apply Threshold (Pixels darker than avg -> Black, Lighter -> White)
+    // We lower the threshold slightly (0.9) to make text thicker
+    const threshold = avgBrightness * 0.9;
+    
+    for (let i=0; i<d.length; i+=4) {
+        let v = (0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2]);
+        let bin = (v < threshold) ? 0 : 255;
+        d[i] = d[i+1] = d[i+2] = bin;
+    }
+    
+    ctx.putImageData(imgData, 0, 0);
+}
+
+document.getElementById('btn-snap-ocr').onclick = async () => {
+    els.ocrLoading.style.display = 'flex';
+    
+    const worker = await initTesseractWorker();
+    
+    // Crop center strip
+    const video = els.ocrVideo;
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+    const cropW = w * 0.85; 
+    const cropH = h * 0.25; 
+    const cropX = (w - cropW) / 2;
+    const cropY = (h - cropH) / 2;
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = cropW;
+    canvas.height = cropH;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+    
+    preprocessImage(canvas);
+    
+    try {
+        const { data: { text } } = await worker.recognize(canvas);
+        
+        // Filter result
+        const cleanText = text
+            .split(/\s+/)
+            .map(w => w.replace(/[^A-Z0-9-]/g, '')) 
+            .filter(w => w.length >= 5) 
+            .filter(w => /\d/.test(w) || /-/.test(w)) // Must have number or dash
+            .sort((a,b) => b.length - a.length)[0]; 
+            
+        if(cleanText) {
+            beep.play().catch(()=>{});
+            if(navigator.vibrate) navigator.vibrate(200);
+            els.search.value = cleanText;
+            currentPage = 1;
+            render();
+            closeAllScanners();
+        } else {
+            alert("No Part Number detected.\nEnsure text is within the green box.");
+            els.ocrLoading.style.display = 'none';
+        }
+    } catch(e) {
+        alert("OCR Error: " + e);
+        els.ocrLoading.style.display = 'none';
+    }
 };
 
 // Initial Load
@@ -810,6 +1074,5 @@ loadData();
 </script>
 </body>
 </html>
-
 
 
