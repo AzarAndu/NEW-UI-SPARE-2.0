@@ -4,6 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
 <title>Spare Parts Master</title>
+
+<!-- PWA / MOBILE APP META TAGS -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#007bff">
+<link rel="apple-touch-icon" href="https://img.icons8.com/color/96/engine.png"> 
+
 <style>
 /* =========================================
    CORE VARIABLES & RESET
@@ -139,12 +147,18 @@ body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%; height: 60px;
+    width: 70%; height: 60px; /* Default for OCR */
     background: transparent;
-    border: none; /* NO SQUARE BORDER */
+    border: none;
     box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
     pointer-events: none;
     overflow: visible;
+}
+
+/* Specific Override for QR Mode (Square Box) */
+.ocr-guide-box.qr-square {
+    width: 260px;
+    height: 260px;
 }
 
 /* Pulsing Animation for Corners */
@@ -305,8 +319,8 @@ body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
     <!-- QR View -->
     <div id="qr-view" style="display:none; position: relative;">
         <div id="qr-reader"></div>
-        <!-- Pro Overlay for QR -->
-        <div class="ocr-guide-box" style="pointer-events:none;">
+        <!-- Pro Overlay for QR (Square) -->
+        <div class="ocr-guide-box qr-square" style="pointer-events:none;">
             <span class="corner top-left"></span>
             <span class="corner top-right"></span>
             <span class="corner bottom-left"></span>
@@ -319,7 +333,7 @@ body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
     <!-- OCR View -->
     <div id="ocr-reader" style="display:none;">
         <video id="ocr-video" playsinline autoplay muted></video>
-        <!-- Pro Overlay for OCR -->
+        <!-- Pro Overlay for OCR (Strip) -->
         <div class="ocr-guide-box">
             <span class="corner top-left"></span>
             <span class="corner top-right"></span>
@@ -452,6 +466,7 @@ async function loadData(force = false) {
 // Pre-calculate Search Strings for Speed
 function processData(data) {
     items = data;
+    // PERFORMANCE OPTIMIZATION: Create search index
     items.forEach(item => {
         item._searchStr = (
             (item["item no"]||"") + " " +
@@ -461,7 +476,7 @@ function processData(data) {
             (item["qty"]||"")
         ).toLowerCase();
     });
-    filteredItems = items; 
+    filteredItems = items; // Default to all
     els.status.textContent = `Ready: ${items.length} Records`;
     render();
 }
@@ -491,6 +506,7 @@ function render() {
     const q = els.search.value.toLowerCase().trim();
     const words = q ? q.split(/\s+/) : [];
     
+    // Optimized Filtering using Pre-calculated _searchStr
     if (!words.length) {
         filteredItems = items;
     } else {
@@ -563,7 +579,7 @@ els.siteMenu.onclick = (e) => {
     window.open(url, "_blank");
 };
 
-// Export to CSV Function
+// Export to CSV Function (Downloads FILTERED data + Excel Fix)
 document.getElementById('btn-export').onclick = () => {
   if (!filteredItems.length) { alert("No data matches current search."); return; }
   
@@ -571,6 +587,7 @@ document.getElementById('btn-export').onclick = () => {
   const csvContent = [
     headers.join(","),
     ...filteredItems.map(row => [
+      // Force Excel to treat as text using ="VALUE" syntax
       `"=""${(row["item no"]||"").replace(/"/g, '""')}"""`, 
       `"=""${(row["part no"]||"").replace(/"/g, '""')}"""`,
       `"${(row["description"]||"").replace(/"/g, '""')}"`,
