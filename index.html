@@ -12,6 +12,11 @@
   --bg-body: #f0f2f5; --bg-card: #ffffff; --text-main: #1a1a1a; --text-muted: #666666; --border-color: #d1d5db;
   --primary: #007bff; --primary-dark: #0056b3; --secondary: #e2e6ea; --secondary-dark: #cbd3da;
   --accent: #28a745; --accent-dark: #1e7e34; --ocr-color: #6f42c1; --ocr-dark: #5a32a3;
+  /* New Professional Colors */
+  --btn-info: #17a2b8; --btn-info-dark: #117a8b;
+  --btn-warn: #fd7e14; --btn-warn-dark: #d6660b;
+  --btn-danger: #dc3545;
+  
   --btn-height: 40px; --radius: 6px;
   --dm-bg-body: #121212; --dm-bg-card: #1e1e1e; --dm-text-main: #e0e0e0; --dm-text-muted: #a0a0a0; --dm-border: #333333;
 }
@@ -31,7 +36,7 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
    ========================================= */
 .btn { 
   display: inline-flex; align-items: center; justify-content: center; 
-  height: var(--btn-height); padding: 0 20px; /* Wider padding for capsule */
+  height: var(--btn-height); padding: 0 20px; 
   font-weight: 700; font-size: 14px; text-transform: uppercase; 
   border-radius: 50px; /* CAPSULE SHAPE */
   cursor: pointer; border: 1px solid rgba(0,0,0,0.1); 
@@ -51,6 +56,13 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
 
 .btn-ocr { background-color: var(--ocr-color); color: white; border-color: var(--ocr-dark); }
 .btn-ocr:active { background-color: var(--ocr-dark); }
+
+/* --- CUSTOM COLORED BUTTONS --- */
+#btn-clear { color: var(--btn-danger); font-size: 18px; }
+#btn-refresh { background-color: var(--btn-info); color: white; border-color: var(--btn-info-dark); }
+#btn-refresh:active { background-color: var(--btn-info-dark); }
+#btn-export { background-color: var(--btn-warn); color: white; border-color: var(--btn-warn-dark); }
+#btn-export:active { background-color: var(--btn-warn-dark); }
 
 /* =========================================
    TOGGLES
@@ -88,26 +100,22 @@ body.compact td, body.compact th { padding: 6px 8px; font-size: 13px; }
    ========================================= */
 body.dark { background-color: var(--dm-bg-body); color: var(--dm-text-main); }
 body.dark .app-container { background-color: var(--dm-bg-card); border-color: var(--dm-border); }
-
 body.dark #search { background: #2b2b2b; border-color: #444; color: #fff; }
 body.dark #search::placeholder { color: #acacac; opacity: 1; }
 body.dark .page-input { background: #2b2b2b; color: #fff; border-color: #444; }
-
 body.dark table { background-color: var(--dm-bg-card); color: var(--dm-text-main); }
 body.dark th { background: #252525; color: #ccc; border-bottom-color: #444; }
 body.dark td { color: var(--dm-text-main); border-bottom-color: #333; }
 body.dark tr:nth-child(even) { background-color: rgba(255,255,255,0.03); }
 body.dark .header-row { border-bottom-color: #333; }
-
 body.dark .btn-secondary { background: #3a3a3a; color: #ffffff; border-color: #111; }
 body.dark .btn-secondary:active { background: #222; }
-
 body.dark .site-menu { background: var(--dm-bg-card); border-color: #444; box-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
 body.dark .site-menu div { border-bottom-color: #333; color: var(--dm-text-main); }
 body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
 
 /* =========================================
-   DROPDOWN & MODAL & OCR
+   MODAL
    ========================================= */
 .site-dropdown-container { position: relative; display: inline-block; }
 .site-menu { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-card); border: 2px solid var(--text-main); z-index: 1000; width: 200px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); }
@@ -118,72 +126,70 @@ body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 9999; }
 .modal { background: var(--bg-card); width: 600px; max-width: 95%; padding: 20px; border-radius: var(--radius); border: 2px solid #444; display: flex; flex-direction: column; }
 
-#qr-reader, #ocr-reader { 
-    width: 100%; 
-    background: #000; 
-    min-height: 300px; 
-    margin: 10px 0; 
-    position: relative; 
-    overflow: hidden;
-    border-radius: 4px;
-}
-#ocr-reader video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+#qr-reader, #ocr-reader { width: 100%; background: #000; min-height: 300px; margin: 10px 0; position: relative; overflow: hidden; border-radius: 4px; }
+#ocr-reader video { width: 100%; height: 100%; object-fit: cover; }
 
-/* OCR Overlay Styles */
+/* =========================================
+   OCR UI: PULSING CORNERS & RUNNING LASER
+   ========================================= */
 .ocr-guide-box {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%;        
-    height: 60px;
-    border: 3px solid #00ff00;
+    width: 70%; height: 60px;
+    background: transparent;
+    border: none;
     box-shadow: 0 0 0 9999px rgba(0,0,0,0.6);
     pointer-events: none;
-    border-radius: 6px;
-    overflow: hidden;
+    overflow: visible;
 }
+
+/* Pulsing Animation for Corners */
+@keyframes pulseCorners {
+    0% { opacity: 0.6; box-shadow: 0 0 5px #00ff00; }
+    50% { opacity: 1; box-shadow: 0 0 15px #00ff00; }
+    100% { opacity: 0.6; box-shadow: 0 0 5px #00ff00; }
+}
+
+.corner {
+    position: absolute; width: 25px; height: 25px;
+    border-color: #00ff00; border-style: solid;
+    z-index: 2;
+    animation: pulseCorners 1.2s infinite ease-in-out; /* Continuous Blink */
+}
+
+/* Corner Positions */
+.top-left { top: -2px; left: -2px; border-width: 4px 0 0 4px; border-radius: 4px 0 0 0; }
+.top-right { top: -2px; right: -2px; border-width: 4px 4px 0 0; border-radius: 0 4px 0 0; }
+.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; border-radius: 0 0 0 4px; }
+.bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; border-radius: 0 0 4px 0; }
+
+/* Running Laser Bar */
 .scan-line {
-    position: absolute;
-    width: 100%;
-    height: 2px;
-    background: #00ff00;
-    box-shadow: 0 0 4px #00ff00;
+    position: absolute; width: 100%; height: 3px;
+    background: linear-gradient(to right, transparent, #00ff00, transparent);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
     top: 0;
-    animation: scanMove 2s infinite ease-in-out;
+    animation: scanMove 1.5s infinite linear;
+    z-index: 1;
 }
 @keyframes scanMove {
     0% { top: 0; opacity: 0; }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
     100% { top: 100%; opacity: 0; }
 }
 
 .ocr-guide-text {
-    position: absolute;
-    top: -30px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    color: #fff;
-    font-weight: bold;
-    font-size: 14px;
-    text-shadow: 1px 1px 3px #000;
-    background: rgba(0,0,0,0.5);
-    padding: 4px 0;
-    border-radius: 4px;
+    position: absolute; top: -35px; left: 0; width: 100%;
+    text-align: center; color: #fff; font-weight: bold; font-size: 14px;
+    text-shadow: 1px 1px 3px #000; background: rgba(0,0,0,0.5);
+    padding: 4px 0; border-radius: 4px;
 }
 .ocr-processing {
-    position: absolute; inset:0;
-    background: rgba(0,0,0,0.85);
-    display: none;
-    align-items: center; justify-content: center;
-    color: white;
-    flex-direction: column;
-    z-index: 20;
+    position: absolute; inset:0; background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    color: white; flex-direction: column; z-index: 20;
 }
 
 /* Utility */
@@ -300,6 +306,12 @@ body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
     <div id="ocr-reader" style="display:none;">
         <video id="ocr-video" playsinline autoplay muted></video>
         <div class="ocr-guide-box">
+            <!-- 4 CORNERS -->
+            <span class="corner top-left"></span>
+            <span class="corner top-right"></span>
+            <span class="corner bottom-left"></span>
+            <span class="corner bottom-right"></span>
+            
             <div class="scan-line"></div>
             <div class="ocr-guide-text">PLACE PART NUMBER IN BOX</div>
         </div>
@@ -365,7 +377,8 @@ const els = {
     ocrBtns: document.getElementById('ocr-btns'),
     ocrVideo: document.getElementById('ocr-video'),
     ocrLoading: document.getElementById('ocr-loading'),
-    btnAutoStatus: document.getElementById('btn-auto-status')
+    btnAutoStatus: document.getElementById('btn-auto-status'),
+    ocrGuideBox: document.querySelector('.ocr-guide-box')
 };
 
 /* =========================================
@@ -546,7 +559,6 @@ document.getElementById('btn-export').onclick = () => {
   const csvContent = [
     headers.join(","),
     ...filteredItems.map(row => [
-      // Force Excel to treat as text using ="VALUE" syntax
       `"=""${(row["item no"]||"").replace(/"/g, '""')}"""`, 
       `"=""${(row["part no"]||"").replace(/"/g, '""')}"""`,
       `"${(row["description"]||"").replace(/"/g, '""')}"`,
@@ -607,31 +619,17 @@ if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
    COMMON SCANNER FUNCTIONS
    ========================================= */
 async function closeAllScanners() {
-    // Stop QR Scanner cleanly
     if(qrScanner) {
-        try {
-            if(qrScanner.isScanning) {
-                await qrScanner.stop();
-            }
-            qrScanner.clear();
-        } catch(e) { }
+        try { if(qrScanner.isScanning) await qrScanner.stop(); qrScanner.clear(); } catch(e) { }
         qrScanner = null;
     }
-    
-    // Stop OCR Stream
     if(ocrStream) {
         try { ocrStream.getTracks().forEach(t => t.stop()); } catch(e){}
         ocrStream = null;
     }
-    
-    // Reset flags
-    isOcrActive = false;
-    isRecognizing = false;
-    
-    // Reset UI
-    els.qrBackdrop.style.display = 'none';
-    torchOn = false;
-    els.ocrLoading.style.display = 'none';
+    isOcrActive = false; isRecognizing = false;
+    els.qrBackdrop.style.display = 'none'; torchOn = false; els.ocrLoading.style.display = 'none';
+    els.ocrGuideBox.classList.remove('scan-success'); // Reset animation
 }
 document.getElementById('qr-close').onclick = closeAllScanners;
 
@@ -654,205 +652,94 @@ async function loadQRLib() {
    ========================================= */
 document.getElementById('btn-scan').onclick = async () => {
     await closeAllScanners(); 
-    
-    els.qrBackdrop.style.display = 'flex';
-    els.modalTitle.textContent = "QR / Barcode Scanner";
-    els.qrReader.style.display = 'block';
-    els.ocrReader.style.display = 'none';
-    els.qrBtns.style.display = 'block';
-    els.ocrBtns.style.display = 'none';
-    scanLock = false;
-    
+    els.qrBackdrop.style.display = 'flex'; els.modalTitle.textContent = "QR / Barcode Scanner";
+    els.qrReader.style.display = 'block'; els.ocrReader.style.display = 'none';
+    els.qrBtns.style.display = 'block'; els.ocrBtns.style.display = 'none'; scanLock = false;
     try {
-        await loadQRLib();
-        qrScanner = new Html5Qrcode("qr-reader");
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-        await qrScanner.start({ facingMode: "environment" }, config, (decodedText) => {
-            if (scanLock) return;
-            scanLock = true;
-            beep.play().catch(()=>{});
-            if(navigator.vibrate) navigator.vibrate(200);
-            els.search.value = decodedText;
-            currentPage = 1;
-            render();
-            closeAllScanners();
+        await loadQRLib(); qrScanner = new Html5Qrcode("qr-reader");
+        await qrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, (decodedText) => {
+            if (scanLock) return; scanLock = true;
+            beep.play().catch(()=>{}); if(navigator.vibrate) navigator.vibrate(200);
+            els.search.value = decodedText; currentPage = 1; render(); closeAllScanners();
         }, () => {});
     } catch(e) { alert("Camera Error (QR): " + e); closeAllScanners(); }
 };
-
-document.getElementById('btn-flash').onclick = async () => {
-    if(!qrScanner) return;
-    torchOn = !torchOn;
-    try { await qrScanner.applyVideoConstraints({ advanced: [{ torch: torchOn }] }); } catch(e) { alert("Flash not supported"); }
-};
-
+document.getElementById('btn-flash').onclick = async () => { if(!qrScanner) return; torchOn = !torchOn; try { await qrScanner.applyVideoConstraints({ advanced: [{ torch: torchOn }] }); } catch(e) { alert("Flash not supported"); } };
 document.getElementById('btn-photo').onclick = () => {
-    closeAllScanners();
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    closeAllScanners(); const input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*';
     input.onchange = async (e) => {
         if(!e.target.files[0]) return;
-        try {
-            await loadQRLib();
-            const instance = new Html5Qrcode("qr-reader"); 
-            const res = await instance.scanFile(e.target.files[0], true);
-            els.search.value = res;
-            render();
-        } catch { alert("No code found"); }
-    };
-    input.click();
+        try { await loadQRLib(); const instance = new Html5Qrcode("qr-reader"); const res = await instance.scanFile(e.target.files[0], true); els.search.value = res; render(); } catch { alert("No code found"); }
+    }; input.click();
 };
 
 /* =========================================
    OCR (TEXT SCANNER) AUTOMATIC LOGIC
    ========================================= */
-
 async function initTesseractWorker() {
     if(ocrWorker) return ocrWorker;
-    if(!window.Tesseract) {
-         await new Promise((resolve) => {
-            const s = document.createElement('script');
-            s.src = "https://unpkg.com/tesseract.js@2.1.0/dist/tesseract.min.js";
-            s.onload = resolve;
-            document.head.appendChild(s);
-        });
-    }
-    const worker = Tesseract.createWorker();
-    await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
-    await worker.setParameters({
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-',
-        tessedit_pageseg_mode: '6' 
-    });
-    ocrWorker = worker;
-    return ocrWorker;
+    if(!window.Tesseract) { await new Promise((resolve) => { const s = document.createElement('script'); s.src = "https://unpkg.com/tesseract.js@2.1.0/dist/tesseract.min.js"; s.onload = resolve; document.head.appendChild(s); }); }
+    const worker = Tesseract.createWorker(); await worker.load(); await worker.loadLanguage('eng'); await worker.initialize('eng');
+    await worker.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-', tessedit_pageseg_mode: '6' });
+    ocrWorker = worker; return ocrWorker;
 }
 
 document.getElementById('btn-ocr').onclick = async () => {
     await closeAllScanners(); 
-    
-    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
-        alert("OCR CAMERA ERROR:\nPlease use HTTPS.");
-        return;
-    }
-
-    els.qrBackdrop.style.display = 'flex';
-    els.modalTitle.textContent = "Text Scanner (Part Numbers)";
-    els.qrReader.style.display = 'none';
-    els.ocrReader.style.display = 'block';
-    els.qrBtns.style.display = 'none';
-    els.ocrBtns.style.display = 'flex';
-    els.ocrLoading.style.display = 'flex'; // Initial Load
-
-    try {
-        ocrStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" }
-        });
-        els.ocrVideo.srcObject = ocrStream;
-    } catch (e) {
-        try {
-             ocrStream = await navigator.mediaDevices.getUserMedia({ video: true });
-             els.ocrVideo.srcObject = ocrStream;
-        } catch(err) {
-            alert("Camera Access Denied.");
-            closeAllScanners();
-            return;
-        }
-    }
-    
-    // Init and Start Loop
-    await initTesseractWorker();
-    els.ocrLoading.style.display = 'none';
-    isOcrActive = true;
-    requestAnimationFrame(autoScanLoop);
+    if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost') { alert("OCR CAMERA ERROR:\nPlease use HTTPS."); return; }
+    els.qrBackdrop.style.display = 'flex'; els.modalTitle.textContent = "Text Scanner (Part Numbers)";
+    els.qrReader.style.display = 'none'; els.ocrReader.style.display = 'block';
+    els.qrBtns.style.display = 'none'; els.ocrBtns.style.display = 'flex'; els.ocrLoading.style.display = 'flex'; 
+    try { ocrStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }); els.ocrVideo.srcObject = ocrStream; } 
+    catch (e) { try { ocrStream = await navigator.mediaDevices.getUserMedia({ video: true }); els.ocrVideo.srcObject = ocrStream; } catch(err) { alert("Camera Access Denied."); closeAllScanners(); return; } }
+    await initTesseractWorker(); els.ocrLoading.style.display = 'none'; isOcrActive = true; requestAnimationFrame(autoScanLoop);
 };
 
 function preprocessImage(canvas) {
-    const ctx = canvas.getContext('2d');
-    const w = canvas.width;
-    const h = canvas.height;
-    let imgData = ctx.getImageData(0,0,w,h);
-    let d = imgData.data;
-    for (let i=0; i<d.length; i+=4) {
-        const v = 0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2];
-        d[i] = d[i+1] = d[i+2] = v;
-    }
+    const ctx = canvas.getContext('2d'); const w = canvas.width; const h = canvas.height;
+    let imgData = ctx.getImageData(0,0,w,h); let d = imgData.data;
+    for (let i=0; i<d.length; i+=4) { const v = 0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2]; d[i] = d[i+1] = d[i+2] = v; }
     ctx.putImageData(imgData, 0, 0);
 }
 
 // === AUTOMATIC SCAN LOOP ===
 async function autoScanLoop() {
     if (!isOcrActive) return;
-    
-    if (isRecognizing) {
-        // If busy, skip frame and check back soon
-        setTimeout(() => requestAnimationFrame(autoScanLoop), 100);
-        return;
-    }
-
+    if (isRecognizing) { setTimeout(() => requestAnimationFrame(autoScanLoop), 100); return; }
     isRecognizing = true;
     
     try {
-        const worker = await initTesseractWorker();
-        const video = els.ocrVideo;
-        
-        if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-            isRecognizing = false;
-            requestAnimationFrame(autoScanLoop);
-            return;
-        }
+        const worker = await initTesseractWorker(); const video = els.ocrVideo;
+        if (video.readyState !== video.HAVE_ENOUGH_DATA) { isRecognizing = false; requestAnimationFrame(autoScanLoop); return; }
 
-        // Crop & Process
-        const w = video.videoWidth;
-        const h = video.videoHeight;
-        const cropW = w * 0.70;
-        const cropH = h * 0.15;
-        const cropX = (w - cropW) / 2;
-        const cropY = (h - cropH) / 2;
+        const w = video.videoWidth; const h = video.videoHeight;
+        const cropW = w * 0.70; const cropH = h * 0.15;
+        const cropX = (w - cropW) / 2; const cropY = (h - cropH) / 2;
         
-        const canvas = document.createElement('canvas');
-        canvas.width = cropW;
-        canvas.height = cropH;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
-        
+        const canvas = document.createElement('canvas'); canvas.width = cropW; canvas.height = cropH;
+        const ctx = canvas.getContext('2d'); ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
         preprocessImage(canvas);
         
         const { data: { text } } = await worker.recognize(canvas);
-        
-        // Validation Logic
-        const cleanText = text
-            .split(/\s+/)
-            .map(w => w.replace(/[^A-Z0-9-]/g, '')) 
-            .filter(w => w.length >= 5) 
-            .sort((a,b) => {
-                const aDigit = /\d/.test(a);
-                const bDigit = /\d/.test(b);
-                if (aDigit && !bDigit) return -1;
-                if (!aDigit && bDigit) return 1;
-                return b.length - a.length;
-            })[0]; 
+        const cleanText = text.split(/\s+/).map(w => w.replace(/[^A-Z0-9-]/g, '')).filter(w => w.length >= 5).sort((a,b) => {
+            const aDigit = /\d/.test(a); const bDigit = /\d/.test(b);
+            if (aDigit && !bDigit) return -1; if (!aDigit && bDigit) return 1; return b.length - a.length;
+        })[0]; 
             
-        if(cleanText && /\d/.test(cleanText)) { // Must have at least one digit
-            beep.play().catch(()=>{});
-            if(navigator.vibrate) navigator.vibrate(200);
+        if(cleanText && /\d/.test(cleanText)) {
+            // SUCCESS ACTION
+            beep.play().catch(()=>{}); if(navigator.vibrate) navigator.vibrate(200);
+            
+            // IMMEDIATE CLOSE (No Animation Delay)
             els.search.value = cleanText;
             currentPage = 1;
             render();
             closeAllScanners();
+            return;
         } else {
-            // No match, try again
-            isRecognizing = false;
-            setTimeout(() => requestAnimationFrame(autoScanLoop), 200); // 200ms delay between scans
+            isRecognizing = false; setTimeout(() => requestAnimationFrame(autoScanLoop), 200);
         }
-        
-    } catch(e) {
-        console.error(e);
-        isRecognizing = false;
-        setTimeout(() => requestAnimationFrame(autoScanLoop), 500); // Longer delay on error
-    }
+    } catch(e) { console.error(e); isRecognizing = false; setTimeout(() => requestAnimationFrame(autoScanLoop), 500); }
 }
 
 // Initial Load
