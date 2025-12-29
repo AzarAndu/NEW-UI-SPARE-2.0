@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,400 +9,98 @@
    CORE VARIABLES & RESET
    ========================================= */
 :root {
-  /* Colors */
-  --bg-body: #f0f2f5;
-  --bg-card: #ffffff;
-  --text-main: #1a1a1a;
-  --text-muted: #666666;
-  --border-color: #d1d5db;
-  
-  /* Brand Colors */
-  --primary: #007bff;
-  --primary-dark: #0056b3;
-  --secondary: #e2e6ea;
-  --secondary-dark: #cbd3da;
-  --accent: #28a745;
-  --accent-dark: #1e7e34;
-  --ocr-color: #6f42c1; /* Purple for OCR */
-  --ocr-dark: #5a32a3;
-  
-  /* Dimensions */
-  --btn-height: 40px;
-  --radius: 6px;
-  
-  /* Dark Mode Overrides */
-  --dm-bg-body: #121212;
-  --dm-bg-card: #1e1e1e;
-  --dm-text-main: #e0e0e0;
-  --dm-text-muted: #a0a0a0;
-  --dm-border: #333333;
+  --bg-body: #f0f2f5; --bg-card: #ffffff; --text-main: #1a1a1a; --text-muted: #666666; --border-color: #d1d5db;
+  --primary: #007bff; --primary-dark: #0056b3; --secondary: #e2e6ea; --secondary-dark: #cbd3da;
+  --accent: #28a745; --accent-dark: #1e7e34; --ocr-color: #6f42c1; --ocr-dark: #5a32a3;
+  --btn-height: 40px; --radius: 6px;
+  --dm-bg-body: #121212; --dm-bg-card: #1e1e1e; --dm-text-main: #e0e0e0; --dm-text-muted: #a0a0a0; --dm-border: #333333;
 }
-
 * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-body);
-  color: var(--text-main);
-  margin: 0;
-  padding: 10px;
-  line-height: 1.5;
-}
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 10px; line-height: 1.5; }
 
 /* =========================================
-   LAYOUT CONTAINER
+   LAYOUT & HEADER
    ========================================= */
-.app-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: var(--bg-card);
-  padding: 20px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 0 rgba(0,0,0,0.05); /* Solid shadow */
-}
-
-/* Header Section */
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid var(--border-color);
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
+.app-container { max-width: 1200px; margin: 0 auto; background: var(--bg-card); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-color); box-shadow: 0 4px 0 rgba(0,0,0,0.05); }
+.header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
 h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
 #status { font-size: 13px; font-family: monospace; color: var(--text-muted); background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px; }
 
 /* =========================================
-   3D BUTTONS (NO ANIMATION)
+   BUTTONS (3D STYLE)
    ========================================= */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--btn-height);
-  padding: 0 16px;
-  font-weight: 700;
-  font-size: 14px;
-  text-transform: uppercase;
-  border-radius: var(--radius);
-  cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.1);
-  position: relative;
-  /* The 3D Effect */
-  border-bottom-width: 4px; 
-  margin-bottom: 4px; 
-  user-select: none;
-}
-
-/* Primary Button (Blue) */
-.btn-primary {
-  background-color: var(--primary);
-  color: #fff;
-  border-color: var(--primary-dark);
-}
-.btn-primary:active {
-  border-bottom-width: 0;
-  margin-top: 4px;
-  margin-bottom: 0;
-  background-color: var(--primary-dark);
-}
-
-/* Secondary Button (Grey) */
-.btn-secondary {
-  background-color: var(--secondary);
-  color: #333;
-  border-color: var(--secondary-dark);
-}
-.btn-secondary:active {
-  border-bottom-width: 0;
-  margin-top: 4px;
-  margin-bottom: 0;
-  background-color: var(--secondary-dark);
-}
-
-/* Success Button (Green/Add) */
-.btn-success {
-  background-color: var(--accent);
-  color: white;
-  border-color: var(--accent-dark);
-}
-.btn-success:active {
-  border-bottom-width: 0;
-  margin-top: 4px;
-  margin-bottom: 0;
-  background-color: var(--accent-dark);
-}
-
-/* OCR Button (Purple) */
-.btn-ocr {
-  background-color: var(--ocr-color);
-  color: white;
-  border-color: var(--ocr-dark);
-}
-.btn-ocr:active {
-  border-bottom-width: 0;
-  margin-top: 4px;
-  margin-bottom: 0;
-  background-color: var(--ocr-dark);
-}
+.btn { display: inline-flex; align-items: center; justify-content: center; height: var(--btn-height); padding: 0 16px; font-weight: 700; font-size: 14px; text-transform: uppercase; border-radius: var(--radius); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); position: relative; border-bottom-width: 4px; margin-bottom: 4px; user-select: none; }
+.btn:active { border-bottom-width: 0; margin-top: 4px; margin-bottom: 0; }
+.btn-primary { background-color: var(--primary); color: #fff; border-color: var(--primary-dark); }
+.btn-primary:active { background-color: var(--primary-dark); }
+.btn-secondary { background-color: var(--secondary); color: #333; border-color: var(--secondary-dark); }
+.btn-secondary:active { background-color: var(--secondary-dark); }
+.btn-success { background-color: var(--accent); color: white; border-color: var(--accent-dark); }
+.btn-success:active { background-color: var(--accent-dark); }
+.btn-ocr { background-color: var(--ocr-color); color: white; border-color: var(--ocr-dark); }
+.btn-ocr:active { background-color: var(--ocr-dark); }
 
 /* =========================================
-   3D TOGGLE SWITCHES
+   TOGGLES
    ========================================= */
-.toggles-group {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.toggle-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
-.toggle-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-/* The Switch Container */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 26px;
-}
-
+.toggles-group { display: flex; gap: 15px; align-items: center; }
+.toggle-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+.toggle-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); }
+.switch { position: relative; display: inline-block; width: 50px; height: 26px; }
 .switch input { opacity: 0; width: 0; height: 0; }
-
-/* The Slider (Track) */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  border-radius: 34px;
-  /* 3D Depth for Track */
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); 
-}
-
-/* The Knob */
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 4px;
-  bottom: 3px;
-  background-color: white;
-  border-radius: 50%;
-  /* Hard shadow for 3D feel */
-  box-shadow: 0 2px 0 rgba(0,0,0,0.2); 
-  transition: transform 0.1s; /* Very fast snap */
-}
-
-/* Checked State */
-input:checked + .slider {
-  background-color: var(--primary);
-}
-
-input:checked + .slider:before {
-  transform: translateX(22px);
-}
-
-/* Dark Mode Specific for Toggles */
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 3px; background-color: white; border-radius: 50%; box-shadow: 0 2px 0 rgba(0,0,0,0.2); transition: transform 0.1s; }
+input:checked + .slider { background-color: var(--primary); }
+input:checked + .slider:before { transform: translateX(22px); }
 body.dark .slider { background-color: #444; }
 body.dark input:checked + .slider { background-color: var(--primary); }
 
 /* =========================================
-   CONTROLS GRID
+   INPUTS & TABLES
    ========================================= */
-.controls-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin-bottom: 15px;
-}
-
-/* Search Bar Area */
-.search-area {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
-
-#search {
-  flex: 1;
-  min-width: 250px;
-  height: 44px; /* Taller input */
-  padding: 0 15px;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 16px;
-  background: var(--bg-body);
-  color: var(--text-main);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-}
+.controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
+.search-area { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+#search { flex: 1; min-width: 250px; height: 44px; padding: 0 15px; border: 2px solid var(--border-color); border-radius: var(--radius); font-size: 16px; background: var(--bg-body); color: var(--text-main); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
 #search:focus { border-color: var(--primary); }
 
-/* =========================================
-   TABLE STYLES
-   ========================================= */
-.table-wrapper {
-  overflow-x: auto;
-  border: 2px solid var(--border-color);
-  border-radius: var(--radius);
-  margin-bottom: 15px;
-  background: var(--bg-card);
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-th {
-  background: #f8f9fa;
-  color: #444;
-  font-weight: 700;
-  text-align: left;
-  padding: 12px;
-  border-bottom: 2px solid #ddd;
-  text-transform: uppercase;
-  font-size: 12px;
-}
-
-td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
-  color: var(--text-main);
-}
-
-/* Striped Rows */
+.table-wrapper { overflow-x: auto; border: 2px solid var(--border-color); border-radius: var(--radius); margin-bottom: 15px; background: var(--bg-card); }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { background: #f8f9fa; color: #444; font-weight: 700; text-align: left; padding: 12px; border-bottom: 2px solid #ddd; text-transform: uppercase; font-size: 12px; }
+td { padding: 12px; border-bottom: 1px solid #eee; color: var(--text-main); }
 tr:nth-child(even) { background-color: rgba(0,0,0,0.02); }
-
-/* Highlighting */
-td.cell-highlight {
-  background-color: #ffeb3b !important;
-  color: black !important;
-  font-weight: bold;
-  border: 2px solid #000;
-}
-
-/* Compact Mode */
+td.cell-highlight { background-color: #ffeb3b !important; color: black !important; font-weight: bold; border: 2px solid #000; }
 body.compact td, body.compact th { padding: 6px 8px; font-size: 13px; }
 
 /* =========================================
    DARK MODE
    ========================================= */
-body.dark {
-  background-color: var(--dm-bg-body);
-  color: var(--dm-text-main);
-}
-body.dark .app-container {
-  background-color: var(--dm-bg-card);
-  border-color: var(--dm-border);
-}
-body.dark #search {
-  background: #2b2b2b;
-  border-color: #444;
-  color: #fff;
-}
-
-/* Fixed Table Dark Mode */
-body.dark table {
-  background-color: var(--dm-bg-card);
-  color: var(--dm-text-main);
-}
-body.dark th {
-  background: #252525;
-  color: #ccc;
-  border-bottom-color: #444;
-}
-body.dark td { 
-  color: var(--dm-text-main);
-  border-bottom-color: #333; 
-}
-
+body.dark { background-color: var(--dm-bg-body); color: var(--dm-text-main); }
+body.dark .app-container { background-color: var(--dm-bg-card); border-color: var(--dm-border); }
+body.dark #search { background: #2b2b2b; border-color: #444; color: #fff; }
+body.dark table { background-color: var(--dm-bg-card); color: var(--dm-text-main); }
+body.dark th { background: #252525; color: #ccc; border-bottom-color: #444; }
+body.dark td { color: var(--dm-text-main); border-bottom-color: #333; }
 body.dark tr:nth-child(even) { background-color: rgba(255,255,255,0.03); }
 body.dark .header-row { border-bottom-color: #333; }
-body.dark .btn-secondary {
-  background: #333;
-  color: #eee;
-  border-color: #111;
-}
+body.dark .btn-secondary { background: #333; color: #eee; border-color: #111; }
 body.dark .btn-secondary:active { background: #222; }
-
-/* Dark Mode Dropdown Fix */
-body.dark .site-menu {
-  background: var(--dm-bg-card);
-  border-color: #444;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
-}
-body.dark .site-menu div {
-  border-bottom-color: #333;
-  color: var(--dm-text-main);
-}
-body.dark .site-menu div:hover {
-  background: var(--primary);
-  color: #fff;
-}
+/* Dark Dropdown */
+body.dark .site-menu { background: var(--dm-bg-card); border-color: #444; box-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
+body.dark .site-menu div { border-bottom-color: #333; color: var(--dm-text-main); }
+body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
 
 /* =========================================
    DROPDOWN & MODAL & OCR
    ========================================= */
 .site-dropdown-container { position: relative; display: inline-block; }
-.site-menu {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: var(--bg-card);
-  border: 2px solid var(--text-main);
-  z-index: 1000;
-  width: 200px;
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
-}
+.site-menu { display: none; position: absolute; top: 100%; left: 0; background: var(--bg-card); border: 2px solid var(--text-main); z-index: 1000; width: 200px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); }
 .site-menu.open { display: block; }
-.site-menu div {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-}
+.site-menu div { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
 .site-menu div:hover { background: var(--primary); color: white; }
 
-/* Modal */
-.modal-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.8);
-  display: none;
-  align-items: center; justify-content: center;
-  z-index: 9999;
-}
-.modal {
-  background: var(--bg-card);
-  width: 600px;
-  max-width: 95%;
-  padding: 20px;
-  border-radius: var(--radius);
-  border: 2px solid #444;
-  display: flex;
-  flex-direction: column;
-}
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 9999; }
+.modal { background: var(--bg-card); width: 600px; max-width: 95%; padding: 20px; border-radius: var(--radius); border: 2px solid #444; display: flex; flex-direction: column; }
 
-/* QR & OCR Video Container */
 #qr-reader, #ocr-reader { 
     width: 100%; 
     background: #000; 
@@ -424,8 +121,8 @@ body.dark .site-menu div:hover {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 80%;
-    height: 70px;
+    width: 85%;
+    height: 90px; /* Made taller for bigger labels */
     border: 3px solid #00ff00;
     box-shadow: 0 0 0 9999px rgba(0,0,0,0.6); /* Dim surrounding */
     pointer-events: none;
@@ -572,7 +269,7 @@ body.dark .site-menu div:hover {
         </div>
         <div id="ocr-loading" class="ocr-processing">
              <div style="font-size:24px; margin-bottom:10px;">⚙️ Reading...</div>
-             <div style="font-size:14px; color:#aaa;">Please hold steady</div>
+             <div style="font-size:14px; color:#aaa;">Hold Steady</div>
         </div>
     </div>
 
@@ -998,21 +695,11 @@ function preprocessImage(canvas) {
     let imgData = ctx.getImageData(0,0,w,h);
     let d = imgData.data;
     
-    // 1. Calculate Average Brightness
-    let totalBrightness = 0;
+    // 1. SIMPLE GRAYSCALE ONLY (No thresholding)
+    // This allows Tesseract to see edges clearly even in shadows
     for (let i=0; i<d.length; i+=4) {
-        totalBrightness += (0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2]);
-    }
-    const avgBrightness = totalBrightness / (d.length / 4);
-    
-    // 2. Apply Threshold (Pixels darker than avg -> Black, Lighter -> White)
-    // We lower the threshold slightly (0.9) to make text thicker
-    const threshold = avgBrightness * 0.9;
-    
-    for (let i=0; i<d.length; i+=4) {
-        let v = (0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2]);
-        let bin = (v < threshold) ? 0 : 255;
-        d[i] = d[i+1] = d[i+2] = bin;
+        const v = 0.2126*d[i] + 0.7152*d[i+1] + 0.0722*d[i+2];
+        d[i] = d[i+1] = d[i+2] = v;
     }
     
     ctx.putImageData(imgData, 0, 0);
@@ -1028,7 +715,7 @@ document.getElementById('btn-snap-ocr').onclick = async () => {
     const w = video.videoWidth;
     const h = video.videoHeight;
     const cropW = w * 0.85; 
-    const cropH = h * 0.25; 
+    const cropH = h * 0.30; 
     const cropX = (w - cropW) / 2;
     const cropY = (h - cropH) / 2;
     
@@ -1043,13 +730,19 @@ document.getElementById('btn-snap-ocr').onclick = async () => {
     try {
         const { data: { text } } = await worker.recognize(canvas);
         
-        // Filter result
+        // Filter result - RELAXED FOR ALPHANUMERIC
         const cleanText = text
             .split(/\s+/)
-            .map(w => w.replace(/[^A-Z0-9-]/g, '')) 
-            .filter(w => w.length >= 5) 
-            .filter(w => /\d/.test(w) || /-/.test(w)) // Must have number or dash
-            .sort((a,b) => b.length - a.length)[0]; 
+            .map(w => w.replace(/[^A-Z0-9-]/g, '')) // Remove noise
+            .filter(w => w.length >= 5)             // Must be decent length
+            .sort((a,b) => {
+                // Priority: Has digit? -> Has hyphen? -> Length
+                const aDigit = /\d/.test(a);
+                const bDigit = /\d/.test(b);
+                if (aDigit && !bDigit) return -1;
+                if (!aDigit && bDigit) return 1;
+                return b.length - a.length;
+            })[0]; 
             
         if(cleanText) {
             beep.play().catch(()=>{});
@@ -1059,7 +752,7 @@ document.getElementById('btn-snap-ocr').onclick = async () => {
             render();
             closeAllScanners();
         } else {
-            alert("No Part Number detected.\nEnsure text is within the green box.");
+            alert("No Part Number detected.\nText seen: " + (text.substr(0,15)||"..."));
             els.ocrLoading.style.display = 'none';
         }
     } catch(e) {
@@ -1074,5 +767,3 @@ loadData();
 </script>
 </body>
 </html>
-
-
