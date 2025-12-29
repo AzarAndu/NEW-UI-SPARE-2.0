@@ -27,16 +27,28 @@ h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
 #status { font-size: 13px; font-family: monospace; color: var(--text-muted); background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 4px; }
 
 /* =========================================
-   BUTTONS (3D STYLE)
+   BUTTONS (CAPSULE 3D STYLE)
    ========================================= */
-.btn { display: inline-flex; align-items: center; justify-content: center; height: var(--btn-height); padding: 0 16px; font-weight: 700; font-size: 14px; text-transform: uppercase; border-radius: var(--radius); cursor: pointer; border: 1px solid rgba(0,0,0,0.1); position: relative; border-bottom-width: 4px; margin-bottom: 4px; user-select: none; }
+.btn { 
+  display: inline-flex; align-items: center; justify-content: center; 
+  height: var(--btn-height); padding: 0 20px; /* Wider padding for capsule */
+  font-weight: 700; font-size: 14px; text-transform: uppercase; 
+  border-radius: 50px; /* CAPSULE SHAPE */
+  cursor: pointer; border: 1px solid rgba(0,0,0,0.1); 
+  position: relative; border-bottom-width: 4px; margin-bottom: 4px; 
+  user-select: none; transition: transform 0.05s;
+}
 .btn:active { border-bottom-width: 0; margin-top: 4px; margin-bottom: 0; }
+
 .btn-primary { background-color: var(--primary); color: #fff; border-color: var(--primary-dark); }
 .btn-primary:active { background-color: var(--primary-dark); }
+
 .btn-secondary { background-color: var(--secondary); color: #333; border-color: var(--secondary-dark); }
 .btn-secondary:active { background-color: var(--secondary-dark); }
+
 .btn-success { background-color: var(--accent); color: white; border-color: var(--accent-dark); }
 .btn-success:active { background-color: var(--accent-dark); }
+
 .btn-ocr { background-color: var(--ocr-color); color: white; border-color: var(--ocr-dark); }
 .btn-ocr:active { background-color: var(--ocr-dark); }
 
@@ -60,7 +72,7 @@ body.dark input:checked + .slider { background-color: var(--primary); }
    ========================================= */
 .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
 .search-area { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-#search { flex: 1; min-width: 250px; height: 44px; padding: 0 15px; border: 2px solid var(--border-color); border-radius: var(--radius); font-size: 16px; background: var(--bg-body); color: var(--text-main); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+#search { flex: 1; min-width: 250px; height: 44px; padding: 0 15px; border: 2px solid var(--border-color); border-radius: 50px; font-size: 16px; background: var(--bg-body); color: var(--text-main); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
 #search:focus { border-color: var(--primary); }
 
 .table-wrapper { overflow-x: auto; border: 2px solid var(--border-color); border-radius: var(--radius); margin-bottom: 15px; background: var(--bg-card); }
@@ -76,15 +88,20 @@ body.compact td, body.compact th { padding: 6px 8px; font-size: 13px; }
    ========================================= */
 body.dark { background-color: var(--dm-bg-body); color: var(--dm-text-main); }
 body.dark .app-container { background-color: var(--dm-bg-card); border-color: var(--dm-border); }
+
 body.dark #search { background: #2b2b2b; border-color: #444; color: #fff; }
+body.dark #search::placeholder { color: #acacac; opacity: 1; }
+body.dark .page-input { background: #2b2b2b; color: #fff; border-color: #444; }
+
 body.dark table { background-color: var(--dm-bg-card); color: var(--dm-text-main); }
 body.dark th { background: #252525; color: #ccc; border-bottom-color: #444; }
 body.dark td { color: var(--dm-text-main); border-bottom-color: #333; }
 body.dark tr:nth-child(even) { background-color: rgba(255,255,255,0.03); }
 body.dark .header-row { border-bottom-color: #333; }
-body.dark .btn-secondary { background: #333; color: #eee; border-color: #111; }
+
+body.dark .btn-secondary { background: #3a3a3a; color: #ffffff; border-color: #111; }
 body.dark .btn-secondary:active { background: #222; }
-/* Dark Dropdown */
+
 body.dark .site-menu { background: var(--dm-bg-card); border-color: #444; box-shadow: 4px 4px 0 rgba(0,0,0,0.5); }
 body.dark .site-menu div { border-bottom-color: #333; color: var(--dm-text-main); }
 body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
@@ -217,7 +234,8 @@ body.dark .site-menu div:hover { background: var(--primary); color: #fff; }
     <button id="btn-scan" class="btn btn-primary">📷 Scan QR</button>
     <button id="btn-ocr" class="btn btn-ocr">📝 OCR Scan</button>
     <button id="btn-add" class="btn btn-success">➕ Add Part</button>
-    <button id="btn-refresh" class="btn btn-secondary">↻ Refresh Data</button>
+    <button id="btn-refresh" class="btn btn-secondary">↻ Refresh</button>
+    <button id="btn-export" class="btn btn-secondary" title="Export current list to CSV">📄 Export CSV</button>
     
     <div class="site-dropdown-container">
         <button id="btn-sites" class="btn btn-primary" style="width:100%">🔍 Search Sites ▼</button>
@@ -312,7 +330,8 @@ const SYNC_URL = "https://script.google.com/macros/s/AKfycbxLxQCxMx7ZR13YieRVn8O
 const SHEETDB_BASE = "https://sheetdb.io/api/v1/bvdsyfvkla1lv";
 const CACHE_KEY = "sheetdb_cache_v1";
 
-let items = [];
+let items = []; // All data
+let filteredItems = []; // Optimized for export
 let currentPage = 1;
 const perPage = 50;
 let autoReadEnabled = true;
@@ -375,7 +394,7 @@ document.getElementById('readToggle').onchange = (e) => {
 };
 
 /* =========================================
-   DATA LOGIC
+   DATA LOGIC (OPTIMIZED)
    ========================================= */
 const cleanKeys = row => {
     const fixed = {};
@@ -388,22 +407,37 @@ async function loadData(force = false) {
     if (!force) {
         const cached = sessionStorage.getItem(CACHE_KEY);
         if (cached) {
-            items = JSON.parse(cached);
-            els.status.textContent = `Ready: ${items.length} Records (Cached)`;
-            render();
+            processData(JSON.parse(cached));
             return;
         }
     }
     try {
         const res = await fetch(SHEETDB_BASE, { cache: "no-store" });
         const data = await res.json();
-        items = data.map(cleanKeys);
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify(items));
-        els.status.textContent = `Ready: ${items.length} Records`;
-        render();
+        const cleaned = data.map(cleanKeys);
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(cleaned));
+        processData(cleaned);
     } catch {
         els.status.textContent = "Offline Mode / Error";
     }
+}
+
+// Pre-calculate Search Strings for Speed
+function processData(data) {
+    items = data;
+    // PERFORMANCE OPTIMIZATION: Create search index
+    items.forEach(item => {
+        item._searchStr = (
+            (item["item no"]||"") + " " +
+            (item["part no"]||"") + " " +
+            (item["description"]||"") + " " +
+            (item["category"]||"") + " " +
+            (item["qty"]||"")
+        ).toLowerCase();
+    });
+    filteredItems = items; // Default to all
+    els.status.textContent = `Ready: ${items.length} Records`;
+    render();
 }
 
 /* =========================================
@@ -431,18 +465,22 @@ function render() {
     const q = els.search.value.toLowerCase().trim();
     const words = q ? q.split(/\s+/) : [];
     
-    const filtered = !words.length ? items : items.filter(r => {
-        const text = Object.values(r).join(" ").toLowerCase();
-        return words.every(w => text.includes(w));
-    });
+    // Optimized Filtering using Pre-calculated _searchStr
+    if (!words.length) {
+        filteredItems = items;
+    } else {
+        filteredItems = items.filter(r => {
+            return words.every(w => r._searchStr.includes(w));
+        });
+    }
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+    const totalPages = Math.max(1, Math.ceil(filteredItems.length / perPage));
     currentPage = Math.min(currentPage, totalPages);
     const start = (currentPage - 1) * perPage;
 
-    display(filtered.slice(start, start + perPage), start);
+    display(filteredItems.slice(start, start + perPage), start);
     
-    els.pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+    els.pageInfo.textContent = `Page ${currentPage} / ${totalPages} (${filteredItems.length})`;
     els.prevBtn.disabled = currentPage === 1;
     els.nextBtn.disabled = currentPage === totalPages;
 }
@@ -498,6 +536,33 @@ els.siteMenu.onclick = (e) => {
         case "fitin-google": url = "https://www.google.com/search?q=" + encodeURIComponent("site:fitinpart.sg " + q); break;
     }
     window.open(url, "_blank");
+};
+
+// Export to CSV Function (Downloads FILTERED data + Excel Fix)
+document.getElementById('btn-export').onclick = () => {
+  if (!filteredItems.length) { alert("No data matches current search."); return; }
+  
+  const headers = ["Item No", "Part No", "Description", "Category", "Qty"];
+  const csvContent = [
+    headers.join(","),
+    ...filteredItems.map(row => [
+      // Force Excel to treat as text using ="VALUE" syntax
+      `"=""${(row["item no"]||"").replace(/"/g, '""')}"""`, 
+      `"=""${(row["part no"]||"").replace(/"/g, '""')}"""`,
+      `"${(row["description"]||"").replace(/"/g, '""')}"`,
+      `"${(row["category"]||"").replace(/"/g, '""')}"`,
+      `"${(row["qty"]||"").replace(/"/g, '""')}"`
+    ].join(","))
+  ].join("\n");
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", `spare_parts_export_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 els.tbody.onclick = (e) => {
